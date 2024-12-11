@@ -1,3 +1,5 @@
+package db;
+
 import java.sql.*;
 public class DBConnection {
     final static String DB_URL = "jdbc:mysql://localhost:3306/test_1";
