@@ -6,67 +6,71 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         UserService userService = new UserService();
-        boolean running = true;
 
-        while (running) {
-            System.out.println("Welcome to the Hotel Management System");
+        while (true) {
+            System.out.println("\nWelcome to the Hotel Management System");
             System.out.println("1. Sign Up");
             System.out.println("2. Log In");
-            System.out.println("3. Exit");
+            System.out.println("3. Check Current User Type");
+            System.out.println("4. Log Out");
+            System.out.println("5. Exit");
             System.out.print("Enter your choice: ");
-
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine(); // consume newline character
 
             switch (choice) {
-                case 1:
-                    // Handle User Sign-Up
-                    System.out.println("--- Sign Up ---");
+                case 1 -> {
+                    System.out.println("\n--- Sign Up ---");
                     System.out.print("Enter username: ");
                     String username = scanner.nextLine();
                     System.out.print("Enter password: ");
                     String password = scanner.nextLine();
+                    System.out.print("Enter user type (guest, administrator, receptionist, housekeeping): ");
+                    String userType = scanner.nextLine();
                     System.out.print("Enter contact details: ");
                     String contactDetails = scanner.nextLine();
-                    System.out.print("Enter user type: ");
-                    String userType = scanner.nextLine();
 
-                    boolean signUpSuccess = userService.signUp(username, password, userType, contactDetails);
-                    if (signUpSuccess) {
+                    boolean success = userService.signUp(username, password, userType, contactDetails);
+                    if (success) {
                         System.out.println("Sign up successful! You can now log in.");
                     } else {
-                        System.out.println("Sign up failed. Please try again.");
+                        System.out.println("Sign up failed. Try again.");
                     }
-                    break;
-
-                case 2:
-                    // Handle User Log-In
-                    System.out.println("--- Log In ---");
+                }
+                case 2 -> {
+                    System.out.println("\n--- Log In ---");
                     System.out.print("Enter username: ");
-                    String loginUsername = scanner.nextLine();
+                    String username = scanner.nextLine();
                     System.out.print("Enter password: ");
-                    String loginPassword = scanner.nextLine();
+                    String password = scanner.nextLine();
 
-                    User user = userService.logIn(loginUsername, loginPassword);
+                    User user = userService.logIn(username, password);
                     if (user != null) {
-                        System.out.println("Login successful! Welcome, " + user.getUserName() + " (" + user.getUserType() + ")");
-                        // You can now use the `user` object to perform user-specific operations
+                        System.out.println("Login successful! Welcome, " + user.getUserName());
                     } else {
-                        System.out.println("Invalid login credentials. Please try again.");
+                        System.out.println("Invalid login credentials.");
                     }
-                    break;
-
-                case 3:
+                }
+                case 3 -> {
+                    System.out.println("\n--- Check User Type ---");
+                    String userType = userService.getCurrentUserType();
+                    if (userType != null) {
+                        System.out.println("Current user's role is: " + userType);
+                    } else {
+                        System.out.println("No user is logged in.");
+                    }
+                }
+                case 4 -> {
+                    System.out.println("\n--- Log Out ---");
+                    userService.logOut();
+                    System.out.println("You have been logged out.");
+                }
+                case 5 -> {
                     System.out.println("Exiting the system...");
-                    running = false;
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break;
+                    System.exit(0);
+                }
+                default -> System.out.println("Invalid choice. Try again.");
             }
         }
-
-        scanner.close();
     }
 }

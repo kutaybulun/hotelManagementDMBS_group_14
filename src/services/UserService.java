@@ -19,4 +19,12 @@ public class UserService {
     public User logIn(String username, String password) {
         return userDataBaseAccess.logIn(username, password);
     }
+
+    public String getCurrentUserType() {
+        return userDataBaseAccess.getCurrentUserType();
+    }
+
+    public void logOut() {
+        userDataBaseAccess.logOut();
+    }
 }

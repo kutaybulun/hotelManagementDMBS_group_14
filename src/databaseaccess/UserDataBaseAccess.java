@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDataBaseAccess {
-
+    private int currentUserID = -1; //-1 is no users logged-in
     // Method to sign up a new user
     public boolean signUp(User user) {
         String sql = "INSERT INTO Users (username, userpassword, userType, contactDetails) VALUES (?, ?, ?, ?)";
@@ -40,13 +40,16 @@ public class UserDataBaseAccess {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new User(
+                User user = new User(
                         resultSet.getInt("userID"),
                         resultSet.getString("username"),
                         resultSet.getString("userpassword"),
                         resultSet.getString("userType"),
                         resultSet.getString("contactDetails")
                 );
+                //store the UserID of current user.
+                this.currentUserID = user.getUserID();
+                return user;
             } else {
                 return null;
             }
@@ -70,5 +73,37 @@ public class UserDataBaseAccess {
             e.printStackTrace();
         }
         return 1; // Default to 1 if there are no users in the table
+    }
+    // will call this to do user-specific operations
+    public int getCurrentUserID() {
+        return currentUserID;
+    }
+    // log-out so that it won't mess the current user index
+    public void logOut() {
+        this.currentUserID = -1;
+    }
+
+    // Method to get the user type of the currently logged-in user
+    public String getCurrentUserType() {
+        if (currentUserID == -1) {
+            System.out.println("No user is currently logged in.");
+            return null;
+        }
+
+        String sql = "SELECT userType FROM Users WHERE userID = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, currentUserID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("userType");
+            } else {
+                return null; // No user found with this userID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
