@@ -3,15 +3,15 @@ package relations;
 public class User {
     // Fields corresponding to the User table in the database
     private int userID;
-    private String userName;
-    private String password;
+    private String username;
+    private String userpassword;
     private String userType;      // guest, administrator, receptionist, housekeeping
     private String contactDetails;
 
-    public User(int userID, String userName, String password, String userType, String contactDetails) {
+    public User(int userID, String username, String userpassword, String userType, String contactDetails) {
         this.userID = userID;
-        this.userName = userName;
-        this.password = password;
+        this.username = username;
+        this.userpassword = userpassword;
         this.userType = userType;
         this.contactDetails = contactDetails;
     }
@@ -25,19 +25,19 @@ public class User {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserPassword() {
+        return userpassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserPassword(String userpassword) {
+        this.userpassword = userpassword;
     }
 
     public String getUserType() {
@@ -60,7 +60,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "userID=" + userID +
-                ", userName='" + userName + '\'' +
+                ", userName='" + username + '\'' +
                 ", userType='" + userType + '\'' +
                 ", contactDetails='" + contactDetails + '\'' +
                 '}';

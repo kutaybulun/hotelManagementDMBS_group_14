@@ -7,29 +7,25 @@ import java.sql.SQLException;
 
 public class DBConnection {
     // Database connection details
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/test_1";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/hotel_management";
     private static final String USER = "kutaybulun";
     private static final String PASS = "12345";
-    private static Connection connection;
 
-    // Establishes a single connection to the database
+    // Establishes a new connection every time it's called
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection(DB_URL, USER, PASS);
-                if (connection != null) {
-                    System.out.println("\nCONNECTED TO DATABASE!!");
-                }
-            } catch (SQLException e) {
-                System.out.println("\n!!! CONNECTION FAILED TO DATABASE !!!");
-                e.printStackTrace();
-            }
+        try {
+            Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("\nCONNECTED TO DATABASE!!");
+            return connection;
+        } catch (SQLException e) {
+            System.out.println("\n!!! CONNECTION FAILED TO DATABASE !!!");
+            e.printStackTrace();
+            return null;
         }
-        return connection;
     }
 
-    // Close the database connection
-    public static void closeConnection() {
+    // This method is no longer necessary but can be kept for reference
+    public static void closeConnection(Connection connection) {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
