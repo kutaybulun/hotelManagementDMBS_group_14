@@ -2,14 +2,14 @@ package relations;
 
 public class Room {
     private int roomID;
-    private String roomType;
+    private int roomTypeID;
     private double price;
     private String status;
     private int hotelID;
 
-    public Room(int roomID, String roomType, double price, String status, int hotelID) {
+    public Room(int roomID, int roomTypeID, double price, String status, int hotelID) {
         this.roomID = roomID;
-        this.roomType = roomType;
+        this.roomTypeID = roomTypeID;
         this.price = price;
         this.status = status;
         this.hotelID = hotelID;
@@ -23,12 +23,12 @@ public class Room {
         this.roomID = roomID;
     }
 
-    public String getRoomType() {
-        return roomType;
+    public int getRoomTypeID() {
+        return roomTypeID;
     }
 
-    public void setRoomType(String roomType) {
-        this.roomType = roomType;
+    public void setRoomTypeID(int roomTypeID) {
+        this.roomTypeID = roomTypeID;
     }
 
     public double getPrice() {
@@ -59,7 +59,7 @@ public class Room {
     public String toString() {
         return "Room{" +
                 "roomID=" + roomID +
-                ", roomType='" + roomType + '\'' +
+                ", roomTypeID='" + roomTypeID + '\'' +
                 ", price=" + price +
                 ", status='" + status + '\'' +
                 ", hotelID=" + hotelID +

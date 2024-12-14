@@ -1,12 +1,12 @@
 CREATE TABLE Hotel (
-    hotelID INT PRIMARY KEY,
+    hotelID INT AUTO_INCREMENT PRIMARY KEY,
     hotelName VARCHAR(50) NOT NULL,
     location VARCHAR(50),
     contactNumber VARCHAR(20)
 );
 
 CREATE TABLE Users (
-    userID INT PRIMARY KEY,
+    userID INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20) NOT NULL,
     userpassword VARCHAR(20) NOT NULL,
     userType VARCHAR(20) NOT NULL,
@@ -15,19 +15,26 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE Room (
-    roomID INT PRIMARY KEY,
-    roomType VARCHAR(20) NOT NULL,
+    roomID INT AUTO_INCREMENT PRIMARY KEY,
+    roomTypeID INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     roomStatus VARCHAR(20) NOT NULL,
     hotelID INT NOT NULL,
+    FOREIGN KEY (roomTypeID) REFERENCES RoomType(roomTypeID)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    CHECK (roomType IN ('single', 'double', 'family')), 
-    CHECK (roomStatus IN ('available', 'booked', 'cleaning'))
+    CHECK (roomStatus IN ('available', 'booked', 'cleaning')),
+    INDEX hotelID
+);
+
+CREATE TABLE RoomType (
+    roomTypeID INT AUTO_INCREMENT PRIMARY KEY,
+    roomTypeName VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Booking (
-    bookingID INT PRIMARY KEY,
+    bookingID INT AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL,
     checkInDate DATE NOT NULL,
     checkOutDate DATE NOT NULL,
@@ -37,7 +44,8 @@ CREATE TABLE Booking (
     FOREIGN KEY (userID) REFERENCES Users(userID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CHECK (paymentStatus IN ('pending', 'paid')),
-    CHECK (reservationStatus IN ('confirmed', 'cancelled', 'pending', 'checked-in', 'checked-out'))
+    CHECK (reservationStatus IN ('confirmed', 'cancelled', 'pending', 'checked-in', 'checked-out')),
+    INDEX userID
 );
 
 CREATE TABLE BookedRooms (
@@ -47,20 +55,23 @@ CREATE TABLE BookedRooms (
     FOREIGN KEY (bookingID) REFERENCES Booking(bookingID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (roomID) REFERENCES Room(roomID)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX (bookingID),
+    INDEX (roomID)
 );
 
 CREATE TABLE Payment (
-    paymentID INT PRIMARY KEY,
+    paymentID INT AUTO_INCREMENT PRIMARY KEY,
     bookingID INT NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     paymentDate DATE NOT NULL,
     FOREIGN KEY (bookingID) REFERENCES Booking(bookingID)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX (bookingID)
 );
 
 CREATE TABLE HousekeepingSchedule (
-    taskID INT PRIMARY KEY,
+    taskID INT AUTO_INCREMENT PRIMARY KEY,
     roomID INT NOT NULL,
     assignedTo INT,
     scheduledDate DATE NOT NULL,
@@ -69,18 +80,22 @@ CREATE TABLE HousekeepingSchedule (
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (assignedTo) REFERENCES Users(userID)
         ON DELETE SET NULL ON UPDATE CASCADE,
-    CHECK (taskStatus IN ('pending', 'completed'))
+    CHECK (taskStatus IN ('pending', 'completed')),
+    INDEX (roomID),
+    INDEX (assignedTo)
 );
 
 CREATE TABLE Employee (
-    employeeID INT PRIMARY KEY,
+    employeeID INT AUTO_INCREMENT PRIMARY KEY,
     ename VARCHAR(50) NOT NULL,
     erole VARCHAR(20) NOT NULL,
     hotelID INT NOT NULL,
     contactDetails VARCHAR(100),
     FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    CHECK (erole IN ('administrator', 'receptionist', 'housekeeping'))
+    CHECK (erole IN ('administrator', 'receptionist', 'housekeeping')),
+    INDEX (hotelID),
+    INDEX (erole)
 );
 
 
