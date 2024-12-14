@@ -1,15 +1,15 @@
 package relations;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class HousekeepingTask {
     private int taskID;
     private int roomID;
     private int assignedTo;
-    private Date scheduledDate;
+    private LocalDate scheduledDate;
     private String taskStatus;
 
-    public HousekeepingTask(int taskID, int roomID, int assignedTo, Date scheduledDate, String taskStatus) {
+    public HousekeepingTask(int taskID, int roomID, int assignedTo, LocalDate scheduledDate, String taskStatus) {
         this.taskID = taskID;
         this.roomID = roomID;
         this.assignedTo = assignedTo;
@@ -41,11 +41,11 @@ public class HousekeepingTask {
         this.assignedTo = assignedTo;
     }
 
-    public Date getScheduledDate() {
+    public LocalDate getScheduledDate() {
         return scheduledDate;
     }
 
-    public void setScheduledDate(Date scheduledDate) {
+    public void setScheduledDate(LocalDate scheduledDate) {
         this.scheduledDate = scheduledDate;
     }
 

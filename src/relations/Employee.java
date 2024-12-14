@@ -2,15 +2,15 @@ package relations;
 
 public class Employee {
     private int employeeID;
-    private String name;
-    private String role;
+    private String ename;
+    private String erole;
     private int hotelID;
     private String contactDetails;
 
     public Employee(int employeeID, String name, String role, int hotelID, String contactDetails) {
         this.employeeID = employeeID;
-        this.name = name;
-        this.role = role;
+        this.ename = name;
+        this.erole = role;
         this.hotelID = hotelID;
         this.contactDetails = contactDetails;
     }
@@ -23,20 +23,20 @@ public class Employee {
         this.employeeID = employeeID;
     }
 
-    public String getName() {
-        return name;
+    public String getEName() {
+        return ename;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEName(String name) {
+        this.ename = name;
     }
 
-    public String getRole() {
-        return role;
+    public String getERole() {
+        return erole;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setERole(String role) {
+        this.erole = role;
     }
 
     public int getHotelID() {
@@ -59,8 +59,8 @@ public class Employee {
     public String toString() {
         return "Employee{" +
                 "employeeID=" + employeeID +
-                ", name='" + name + '\'' +
-                ", role='" + role + '\'' +
+                ", name='" + ename + '\'' +
+                ", role='" + erole + '\'' +
                 ", hotelID=" + hotelID +
                 ", contactDetails='" + contactDetails + '\'' +
                 '}';

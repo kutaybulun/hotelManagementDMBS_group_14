@@ -1,13 +1,14 @@
 package relations;
+import java.math.BigDecimal;
 
 public class Room {
     private int roomID;
     private int roomTypeID;
-    private double price;
+    private BigDecimal price;
     private String status;
     private int hotelID;
 
-    public Room(int roomID, int roomTypeID, double price, String status, int hotelID) {
+    public Room(int roomID, int roomTypeID, BigDecimal price, String status, int hotelID) {
         this.roomID = roomID;
         this.roomTypeID = roomTypeID;
         this.price = price;
@@ -31,19 +32,19 @@ public class Room {
         this.roomTypeID = roomTypeID;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public String getStatus() {
+    public String getRoomStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setRoomStatus(String status) {
         this.status = status;
     }
 

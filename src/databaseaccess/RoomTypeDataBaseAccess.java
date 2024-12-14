@@ -1,24 +1,22 @@
 package databaseaccess;
 
 import db.DBConnection;
-import relations.Hotel;
+import relations.RoomType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class HotelDataBaseAccess {
+public class RoomTypeDataBaseAccess {
 
-    // Create a new Hotel record in the Hotel table
-    public boolean create(Hotel hotel) {
-        String sql = "INSERT INTO Hotel (hotelName, location, contactNumber) VALUES (?, ?, ?)";
+    // Create a new RoomType record in the RoomType table
+    public boolean create(RoomType roomType) {
+        String sql = "INSERT INTO RoomType (roomTypeName) VALUES (?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setString(1, hotel.getHotelName());
-            preparedStatement.setString(2, hotel.getLocation());
-            preparedStatement.setString(3, hotel.getContactNumber());
+            preparedStatement.setString(1, roomType.getRoomTypeName());
 
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -27,13 +25,13 @@ public class HotelDataBaseAccess {
         }
     }
 
-    // Delete a Hotel by ID
-    public boolean delete(int hotelID) {
-        String sql = "DELETE FROM Hotel WHERE hotelID = ?";
+    // Delete a RoomType record by roomTypeID
+    public boolean delete(int roomTypeID) {
+        String sql = "DELETE FROM RoomType WHERE roomTypeID = ?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, hotelID);
+            preparedStatement.setInt(1, roomTypeID);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -41,9 +39,9 @@ public class HotelDataBaseAccess {
         }
     }
 
-    // Get the next available Hotel ID
-    public int getNextHotelID() {
-        String sql = "SELECT MAX(hotelID) + 1 AS nextID FROM Hotel";
+    // Get the next available RoomType ID
+    public int getNextRoomTypeID() {
+        String sql = "SELECT MAX(roomTypeID) + 1 AS nextID FROM RoomType";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {

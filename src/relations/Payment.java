@@ -1,14 +1,16 @@
 package relations;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 
 public class Payment {
     private int paymentID;
     private int bookingID;
-    private double amount;
-    private Date paymentDate;
+    private BigDecimal amount;
+    private LocalDate paymentDate;
 
-    public Payment(int paymentID, int bookingID, double amount, Date paymentDate) {
+    public Payment(int paymentID, int bookingID, BigDecimal amount, LocalDate paymentDate) {
         this.paymentID = paymentID;
         this.bookingID = bookingID;
         this.amount = amount;
@@ -31,19 +33,19 @@ public class Payment {
         this.bookingID = bookingID;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public Date getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 

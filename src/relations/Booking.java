@@ -1,17 +1,17 @@
 package relations;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Booking {
     private int bookingID;
     private int userID;
-    private Date checkInDate;
-    private Date checkOutDate;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
     private int numberOfGuests;
     private String paymentStatus;
     private String reservationStatus;
 
-    public Booking(int bookingID, int userID, Date checkInDate, Date checkOutDate, int numberOfGuests, String paymentStatus, String reservationStatus) {
+    public Booking(int bookingID, int userID, LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, String paymentStatus, String reservationStatus) {
         this.bookingID = bookingID;
         this.userID = userID;
         this.checkInDate = checkInDate;
@@ -37,19 +37,19 @@ public class Booking {
         this.userID = userID;
     }
 
-    public Date getCheckInDate() {
+    public LocalDate getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(Date checkInDate) {
+    public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
     }
 
-    public Date getCheckOutDate() {
+    public LocalDate getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(Date checkOutDate) {
+    public void setCheckOutDate(LocalDate checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 
