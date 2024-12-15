@@ -49,6 +49,7 @@ public class AdministratorService {
     }
 
     public void viewAllHousekeepingRecords(){}
+
     public List<MostBookedRoomType> viewMostBookedRoomTypes() {
         return bookingDataBaseAccess.viewMostBookedRoomTypes();
     }

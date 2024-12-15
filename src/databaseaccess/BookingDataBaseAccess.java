@@ -16,13 +16,14 @@ public class BookingDataBaseAccess {
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, booking.getUserID());
-            preparedStatement.setDate(2, java.sql.Date.valueOf(booking.getCheckInDate())); // Converts LocalDate to SQL Date
-            preparedStatement.setDate(3, java.sql.Date.valueOf(booking.getCheckOutDate())); // Converts LocalDate to SQL Date
+            preparedStatement.setDate(2, Date.valueOf(booking.getCheckInDate()));
+            preparedStatement.setDate(3, Date.valueOf(booking.getCheckOutDate()));
             preparedStatement.setInt(4, booking.getNumberOfGuests());
             preparedStatement.setString(5, booking.getPaymentStatus());
             preparedStatement.setString(6, booking.getReservationStatus());
 
-            return preparedStatement.executeUpdate() > 0;
+            int rowsInserted = preparedStatement.executeUpdate();
+            return rowsInserted > 0; // Return true if at least one row was inserted
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

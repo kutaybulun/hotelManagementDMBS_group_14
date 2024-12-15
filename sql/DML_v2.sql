@@ -97,6 +97,27 @@ DELIMITER ;
 
 DELIMITER $$
 
+CREATE TRIGGER update_room_status_on_booking_cancel
+    AFTER UPDATE ON Booking
+    FOR EACH ROW
+BEGIN
+    -- Check if the reservation status has been changed to 'cancelled'
+    IF NEW.reservationStatus = 'cancelled' THEN
+        -- Update the status of all the rooms associated with this booking to 'available'
+    UPDATE Room
+    SET roomStatus = 'available'
+    WHERE roomID IN (
+        SELECT roomID
+        FROM BookedRooms
+        WHERE bookingID = NEW.bookingID
+    );
+END IF;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
 CREATE TRIGGER update_room_status_on_booking
     AFTER INSERT ON BookedRooms
     FOR EACH ROW
