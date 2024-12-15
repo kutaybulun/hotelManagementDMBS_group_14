@@ -2,7 +2,8 @@ package databaseaccess;
 
 import db.DBConnection;
 import relations.User;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +24,21 @@ public class UserDataBaseAccess {
 
             int result = preparedStatement.executeUpdate();
             return result > 0; // returns true if 1 or more rows were affected
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(int userID) {
+        String sql = "DELETE FROM Users WHERE userID = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, userID);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -105,5 +121,30 @@ public class UserDataBaseAccess {
             e.printStackTrace();
             return null;
         }
+    }
+
+    //to view all Users
+    public List<User> viewAllUsers() {
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT * FROM Users";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                User user = new User(
+                        resultSet.getInt("userID"),
+                        resultSet.getString("username"),
+                        resultSet.getString("userpassword"),
+                        resultSet.getString("userType"),
+                        resultSet.getString("contactDetails")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userList;
     }
 }
