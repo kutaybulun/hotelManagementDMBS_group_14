@@ -10,7 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDataBaseAccess {
-    private int currentUserID = -1; //-1 is no users logged-in
+    private static int currentUserID = -1; // static, shared among all instances
+
     // Method to sign up a new user
     public boolean signUp(User user) {
         String sql = "INSERT INTO Users (username, userpassword, userType, contactDetails) VALUES (?, ?, ?, ?)";
@@ -63,8 +64,8 @@ public class UserDataBaseAccess {
                         resultSet.getString("userType"),
                         resultSet.getString("contactDetails")
                 );
-                //store the UserID of current user.
-                this.currentUserID = user.getUserID();
+                currentUserID = user.getUserID();
+                System.out.println("User logged in with ID: " + currentUserID);
                 return user;
             } else {
                 return null;
@@ -82,24 +83,25 @@ public class UserDataBaseAccess {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                int maxUserID = resultSet.getInt(1); // Get the max userID from the result
-                return maxUserID + 1; // Increment it by 1
+                int maxUserID = resultSet.getInt(1);
+                return maxUserID + 1;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 1; // Default to 1 if there are no users in the table
-    }
-    // will call this to do user-specific operations
-    public int getCurrentUserID() {
-        return currentUserID;
-    }
-    // log-out so that it won't mess the current user index
-    public void logOut() {
-        this.currentUserID = -1;
+        return 1;
     }
 
-    // Method to get the user type of the currently logged-in user
+    public int getCurrentUserID() {
+        System.out.println("Current User ID: " + currentUserID);
+        return currentUserID;
+    }
+
+    public void logOut() {
+        currentUserID = -1;
+        System.out.println("User logged out, currentUserID set to -1.");
+    }
+
     public String getCurrentUserType() {
         if (currentUserID == -1) {
             System.out.println("No user is currently logged in.");
@@ -115,7 +117,7 @@ public class UserDataBaseAccess {
             if (resultSet.next()) {
                 return resultSet.getString("userType");
             } else {
-                return null; // No user found with this userID
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -123,7 +125,6 @@ public class UserDataBaseAccess {
         }
     }
 
-    //to view all Users
     public List<User> viewAllUsers() {
         List<User> userList = new ArrayList<>();
         String sql = "SELECT * FROM Users";

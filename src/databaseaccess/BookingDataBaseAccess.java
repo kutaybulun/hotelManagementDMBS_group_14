@@ -44,7 +44,7 @@ public class BookingDataBaseAccess {
         }
     }
 
-    public int getNextBookingID() {
+    /* public int getNextBookingID() {
         String sql = "SELECT MAX(bookingID) + 1 AS nextID FROM Booking";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -57,7 +57,24 @@ public class BookingDataBaseAccess {
             e.printStackTrace();
         }
         return 1; // default to 1 if no rows exist
+    } */
+
+    public int getNextBookingID() {
+        String sql = "SELECT COALESCE(MAX(bookingID), 0) FROM Booking";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int maxBookingID = resultSet.getInt(1); // Get the max bookingID (or 0 if no rows)
+                return maxBookingID + 1; // Increment it by 1
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1; // Default to 1 if there are no bookings in the table
     }
+
     //query to view all booking records, returns a BookingRecord list, used in administrator service.
     public List<BookingRecord> viewAllBookingRecords() {
         String sql =

@@ -24,5 +24,12 @@ public class MostBookedRoomType {
     public void setBookingCount(int bookingCount) {
         this.bookingCount = bookingCount;
     }
+    @Override
+    public String toString() {
+        return "MostBookedRoomType{" +
+                "roomTypeName='" + roomTypeName + '\'' +
+                ", bookingCount=" + bookingCount +
+                '}';
+    }
 }
 

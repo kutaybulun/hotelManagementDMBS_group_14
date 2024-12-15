@@ -84,5 +84,19 @@ public class BookingRecord {
     public void setBookedRooms(String bookedRooms) {
         this.bookedRooms = bookedRooms;
     }
+    @Override
+    public String toString() {
+        return "BookingRecord{" +
+                "bookingID=" + bookingID +
+                ", guestName='" + guestName + '\'' +
+                ", checkInDate=" + checkInDate +
+                ", checkOutDate=" + checkOutDate +
+                ", numberOfGuests=" + numberOfGuests +
+                ", paymentStatus='" + paymentStatus + '\'' +
+                ", reservationStatus='" + reservationStatus + '\'' +
+                ", bookedRooms='" + bookedRooms + '\'' +
+                '}';
+    }
+
 }
 

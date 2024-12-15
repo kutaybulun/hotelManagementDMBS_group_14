@@ -32,6 +32,7 @@ public class GuestService {
     public boolean addNewBooking(LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, int roomID) {
         int bookingID = bookingDataBaseAccess.getNextBookingID(); // Get next available booking ID
         int userID = userDataBaseAccess.getCurrentUserID();
+        System.out.println("Current User ID: " + userID); // Debug line to verify userID
         String paymentStatus = "pending";
         String reservationStatus = "pending";
 
