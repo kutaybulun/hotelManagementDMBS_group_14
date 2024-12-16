@@ -1,9 +1,8 @@
 package databaseaccess;
 
 import db.DBConnection;
-import relations.Employee;
+import relations.*;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +11,13 @@ public class EmployeeDataBaseAccess {
 
     // Create a new employee in the database
     public boolean create(Employee employee) {
-        String sql = "INSERT INTO Employee (ename, erole, dailysalary, hotelID, contactDetails) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Employee (ename, userID, roleID, hotelID, contactDetails) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, employee.getEname());
-            preparedStatement.setString(2, employee.getErole());
-            preparedStatement.setBigDecimal(3, employee.getDailysalary());
+            preparedStatement.setInt(2, employee.getUserID());
+            preparedStatement.setInt(3, employee.getRoleID());
             preparedStatement.setInt(4, employee.getHotelID());
             preparedStatement.setString(5, employee.getContactDetails());
 
@@ -47,14 +46,13 @@ public class EmployeeDataBaseAccess {
 
     // Get the next available employeeID
     public int getNextEmployeeID() {
-        String sql = "SELECT MAX(employeeID) FROM Employee";
+        String sql = "SELECT COALESCE(MAX(employeeID), 0) + 1 AS nextID FROM Employee";
         try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                int maxEmployeeID = resultSet.getInt(1); // Get the max employeeID from the result
-                return maxEmployeeID + 1; // Increment it by 1
+                return resultSet.getInt("nextID");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,23 +60,47 @@ public class EmployeeDataBaseAccess {
         return 1; // Default to 1 if there are no employees in the table
     }
 
-    // View all employees in the Employee table
-    public List<Employee> viewAllEmployees() {
-        List<Employee> employeeList = new ArrayList<>();
-        String sql = "SELECT * FROM Employee";
+    // Get Role ID by Role Name
+    public int getRoleIDByName(String roleName) {
+        String sql = "SELECT roleID FROM EmployeeRole WHERE roleName = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, roleName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("roleID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Role not found
+    }
+
+
+    // View all employees along with role and salary information
+    public List<EmployeeWithRole> viewAllEmployeesWithRoles() {
+        List<EmployeeWithRole> employeeList = new ArrayList<>();
+        String sql = """
+        SELECT E.employeeID, E.ename, E.userID, E.roleID, E.hotelID, E.contactDetails, R.roleName, R.dailySalary
+        FROM Employee E
+        JOIN EmployeeRole R ON E.roleID = R.roleID
+    """;
 
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                Employee employee = new Employee(
+                EmployeeWithRole employee = new EmployeeWithRole(
                         resultSet.getInt("employeeID"),
                         resultSet.getString("ename"),
-                        resultSet.getString("erole"),
-                        resultSet.getBigDecimal("dailysalary"),
+                        resultSet.getInt("userID"),
+                        resultSet.getInt("roleID"),
                         resultSet.getInt("hotelID"),
-                        resultSet.getString("contactDetails")
+                        resultSet.getString("contactDetails"),
+                        resultSet.getString("roleName"),
+                        resultSet.getBigDecimal("dailySalary")
                 );
                 employeeList.add(employee);
             }

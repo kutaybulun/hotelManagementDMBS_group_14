@@ -7,7 +7,7 @@ CREATE TABLE Hotel (
 
 CREATE TABLE Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(20) NOT NULL,
+    username VARCHAR(20) NOT NULL UNIQUE,
     userpassword VARCHAR(20) NOT NULL,
     userType VARCHAR(20) NOT NULL,
     contactDetails VARCHAR(100),
@@ -15,8 +15,8 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE RoomType (
-                          roomTypeID INT AUTO_INCREMENT PRIMARY KEY,
-                          roomTypeName VARCHAR(50) NOT NULL UNIQUE
+    roomTypeID INT AUTO_INCREMENT PRIMARY KEY,
+    roomTypeName VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Room (
@@ -80,16 +80,26 @@ CREATE TABLE HousekeepingSchedule (
     CHECK (taskStatus IN ('pending', 'completed'))
 );
 
+
+CREATE TABLE EmployeeRole (
+    roleID INT AUTO_INCREMENT PRIMARY KEY,
+    roleName VARCHAR(50) NOT NULL UNIQUE,
+    dailySalary DECIMAL(10, 2) NOT NULL
+);
+
 CREATE TABLE Employee (
     employeeID INT AUTO_INCREMENT PRIMARY KEY,
     ename VARCHAR(50) NOT NULL,
-    erole VARCHAR(20) NOT NULL,
+    userID INT NOT NULL UNIQUE, -- Ensuring an employee is linked to one user account
+    roleID INT NOT NULL,
     hotelID INT NOT NULL,
     contactDetails VARCHAR(100),
+    FOREIGN KEY (roleID) REFERENCES EmployeeRole(roleID)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CHECK (erole IN ('administrator', 'receptionist', 'housekeeping'))
-);
-
+      ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (userID) REFERENCES Users(userID)
+      ON DELETE CASCADE ON UPDATE CASCADE
+    );
 
 

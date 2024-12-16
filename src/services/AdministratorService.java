@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class AdministratorService {
+    private final EmployeeDataBaseAccess employeeDataBaseAccess;
     private final RoomDataBaseAccess roomDataBaseAccess;
     private final UserDataBaseAccess userDataBaseAccess;
     private final BookingDataBaseAccess bookingDataBaseAccess;
@@ -16,6 +17,7 @@ public class AdministratorService {
         this.userDataBaseAccess = new UserDataBaseAccess();
         this.bookingDataBaseAccess = new BookingDataBaseAccess();
         this.roomTypeDataBaseAccess = new RoomTypeDataBaseAccess();
+        this.employeeDataBaseAccess = new EmployeeDataBaseAccess();
     }
 
     public boolean addRoom(int roomTypeID, BigDecimal price, String status, int hotelID){
@@ -66,6 +68,8 @@ public class AdministratorService {
     public List<MostBookedRoomType> viewMostBookedRoomTypes() {
         return bookingDataBaseAccess.viewMostBookedRoomTypes();
     }
-    public void viewAllEmployeesWithRole(){}
-
+    // View all employees along with their roles and salary information
+    public List<EmployeeWithRole> viewAllEmployeesWithRole() {
+        return employeeDataBaseAccess.viewAllEmployeesWithRoles();
+    }
 }

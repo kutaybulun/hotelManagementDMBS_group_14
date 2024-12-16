@@ -1,30 +1,28 @@
 package relations;
 
-public class Employee {
+import java.math.BigDecimal;
+
+public class EmployeeWithRole {
     private int employeeID;
     private String ename;
     private int userID;
     private int roleID;
     private int hotelID;
     private String contactDetails;
+    private String roleName;
+    private BigDecimal dailySalary;
 
-    // Constructor with all fields (used when retrieving from the database)
-    public Employee(int employeeID, String ename, int userID, int roleID, int hotelID, String contactDetails) {
+    // Constructor with all fields
+    public EmployeeWithRole(int employeeID, String ename, int userID, int roleID, int hotelID,
+                            String contactDetails, String roleName, BigDecimal dailySalary) {
         this.employeeID = employeeID;
         this.ename = ename;
         this.userID = userID;
         this.roleID = roleID;
         this.hotelID = hotelID;
         this.contactDetails = contactDetails;
-    }
-
-    // Constructor without employeeID (used when creating a new employee)
-    public Employee(String ename, int userID, int roleID, int hotelID, String contactDetails) {
-        this.ename = ename;
-        this.userID = userID;
-        this.roleID = roleID;
-        this.hotelID = hotelID;
-        this.contactDetails = contactDetails;
+        this.roleName = roleName;
+        this.dailySalary = dailySalary;
     }
 
     // Getters and Setters
@@ -76,15 +74,33 @@ public class Employee {
         this.contactDetails = contactDetails;
     }
 
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public BigDecimal getDailySalary() {
+        return dailySalary;
+    }
+
+    public void setDailySalary(BigDecimal dailySalary) {
+        this.dailySalary = dailySalary;
+    }
+
     @Override
     public String toString() {
-        return "Employee{" +
+        return "EmployeeWithRole{" +
                 "employeeID=" + employeeID +
                 ", ename='" + ename + '\'' +
                 ", userID=" + userID +
                 ", roleID=" + roleID +
                 ", hotelID=" + hotelID +
                 ", contactDetails='" + contactDetails + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", dailySalary=" + dailySalary +
                 '}';
     }
 }

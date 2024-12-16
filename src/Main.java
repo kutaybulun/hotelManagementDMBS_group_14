@@ -91,7 +91,8 @@ public class Main {
             System.out.println("7. View Most Booked Room Type");
             System.out.println("8. Add Room Type");
             System.out.println("9. View Room Types");
-            System.out.println("10. Logout");
+            System.out.println("10. View All Employees With Role");
+            System.out.println("11. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -107,7 +108,8 @@ public class Main {
                 case 7 -> viewMostBookedRoomType();
                 case 8 -> addRoomType();
                 case 9 -> viewRoomTypes();
-                case 10 -> {
+                case 10 -> viewAllEmployeesWithRole(); // <-- New Option for viewing employees with role
+                case 11 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -356,6 +358,16 @@ public class Main {
             System.out.println("No room types available.");
         } else {
             roomTypes.forEach(System.out::println);
+        }
+    }
+
+    private static void viewAllEmployeesWithRole() {
+        System.out.println("\n--- View All Employees With Roles ---");
+        var employees = adminService.viewAllEmployeesWithRole();
+        if (employees.isEmpty()) {
+            System.out.println("No employees found.");
+        } else {
+            employees.forEach(System.out::println);
         }
     }
 

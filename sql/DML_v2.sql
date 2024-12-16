@@ -1,27 +1,125 @@
--- Insert Room Types
+-- Insert Room Types (unchanged as requested)
 INSERT INTO RoomType (roomTypeName) VALUES
     ('single'),
     ('double'),
     ('family');
 
--- Insert Hotels
-INSERT INTO Hotel (hotelName, location, contactNumber) VALUES
-    ('Efe Hotel', 'Atasehir', '216-1001'),
-    ('Kutay Hotel', 'Adana', '333-2121');
+-- Insert Employee Roles (unchanged as requested)
+INSERT INTO EmployeeRole (roleName, dailySalary) VALUES
+    ('administrator', 250.00),
+    ('receptionist', 150.00),
+    ('housekeeping', 100.00);
 
--- Insert Users
+-- Insert Hotels (using a more systematic approach)
+INSERT INTO Hotel (hotelName, location, contactNumber) VALUES
+    ('Efe Hotel', 'Atasehir', CONCAT('216-', FLOOR(RAND() * 9000) + 1000)),
+    ('Kutay Hotel', 'Adana', CONCAT('333-', FLOOR(RAND() * 9000) + 1000)),
+    ('Sunrise Suites', 'Istanbul', CONCAT('212-', FLOOR(RAND() * 9000) + 1000)),
+    ('Moonlight Inn', 'Izmir', CONCAT('232-', FLOOR(RAND() * 9000) + 1000));
+
+-- Insert Users (more dynamic and varied data)
 INSERT INTO Users (username, userpassword, userType, contactDetails) VALUES
     ('admin_h1', 'adminpass1', 'administrator', 'admin1@hotel1.com'),
     ('recept_h1', 'receptpass1', 'receptionist', 'recept1@hotel1.com'),
     ('house1_h1', 'housepass1', 'housekeeping', 'house1@hotel1.com'),
-    ('guest1_h1', 'guestpass1', 'guest', 'guest1@hotel1.com');
+    ('house2_h1', 'housepass2', 'housekeeping', 'house2@hotel1.com'),
+    ('house3_h2', 'housepass3', 'housekeeping', 'house3@hotel2.com'),
+    ('guest1_h1', 'guestpass1', 'guest', 'guest1@hotel1.com'),
+    ('guest2_h1', 'guestpass2', 'guest', 'guest2@hotel1.com'),
+    ('guest1_h2', 'guestpass3', 'guest', 'guest1@hotel2.com'),
+    ('guest1_h3', 'guestpass4', 'guest', 'guest1@hotel3.com');
 
--- Insert Rooms
+-- Insert Employees (linking to user accounts and employee roles)
+INSERT INTO Employee (ename, userID, roleID, hotelID, contactDetails)
+VALUES
+    ('Efe Admin', (SELECT userID FROM Users WHERE username = 'admin_h1'),
+     (SELECT roleID FROM EmployeeRole WHERE roleName = 'administrator'),
+     (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel'),
+     'admin1@hotel1.com'),
+
+    ('Kutay Receptionist', (SELECT userID FROM Users WHERE username = 'recept_h1'),
+     (SELECT roleID FROM EmployeeRole WHERE roleName = 'receptionist'),
+     (SELECT hotelID FROM Hotel WHERE hotelName = 'Kutay Hotel'),
+     'recept1@hotel1.com'),
+
+    ('Housekeeper 1', (SELECT userID FROM Users WHERE username = 'house1_h1'),
+     (SELECT roleID FROM EmployeeRole WHERE roleName = 'housekeeping'),
+     (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel'),
+     'house1@hotel1.com'),
+
+    ('Housekeeper 2', (SELECT userID FROM Users WHERE username = 'house2_h1'),
+     (SELECT roleID FROM EmployeeRole WHERE roleName = 'housekeeping'),
+     (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel'),
+     'house2@hotel1.com'),
+
+    ('Housekeeper 3', (SELECT userID FROM Users WHERE username = 'house3_h2'),
+     (SELECT roleID FROM EmployeeRole WHERE roleName = 'housekeeping'),
+     (SELECT hotelID FROM Hotel WHERE hotelName = 'Kutay Hotel'),
+     'house3@hotel2.com');
+
+-- Insert Rooms (more dynamic data using subqueries)
 INSERT INTO Room (roomTypeID, price, roomStatus, hotelID)
 VALUES
-    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'single'), 100.00, 'available', 1),
-    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'double'), 150.00, 'available', 1),
-    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'family'), 200.00, 'available', 1);
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'single'),
+      ROUND(90 + (RAND() * 30), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'double'),
+      ROUND(120 + (RAND() * 30), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'family'),
+      ROUND(180 + (RAND() * 30), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Efe Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'single'),
+      ROUND(95 + (RAND() * 25), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Kutay Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'double'),
+      ROUND(130 + (RAND() * 20), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Kutay Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'family'),
+      ROUND(220 + (RAND() * 20), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Kutay Hotel')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'single'),
+      ROUND(88 + (RAND() * 12), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Sunrise Suites')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'double'),
+      ROUND(140 + (RAND() * 30), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Sunrise Suites')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'family'),
+      ROUND(190 + (RAND() * 40), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Sunrise Suites')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'single'),
+      ROUND(90 + (RAND() * 20), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Moonlight Inn')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'double'),
+      ROUND(150 + (RAND() * 25), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Moonlight Inn')),
+
+    ( (SELECT roomTypeID FROM RoomType WHERE roomTypeName = 'family'),
+      ROUND(210 + (RAND() * 30), 2),
+      'available',
+      (SELECT hotelID FROM Hotel WHERE hotelName = 'Moonlight Inn'));
+
 
 -- Insert Booking Records
 INSERT INTO Booking (userID, checkInDate, checkOutDate, numberOfGuests, paymentStatus, reservationStatus)
@@ -78,6 +176,37 @@ BEGIN
         SET MESSAGE_TEXT = 'Cannot book for overlapping dates';
 END IF;
 END $$
+
+DELIMITER ;
+
+DELIMITER //
+-- insert automatically to employee if user is an employee
+CREATE TRIGGER after_user_insert
+    AFTER INSERT ON Users
+    FOR EACH ROW
+BEGIN
+    -- Declare the role_id variable
+    DECLARE role_id INT;
+
+    -- Check if the new user's type is 'administrator', 'receptionist', or 'housekeeping'
+    IF NEW.userType IN ('administrator', 'receptionist', 'housekeeping') THEN
+
+        -- Get the roleID from EmployeeRole table for the inserted userType
+    SELECT roleID INTO role_id
+    FROM EmployeeRole
+    WHERE roleName = NEW.userType
+        LIMIT 1;
+
+    -- If roleID is found, insert into Employee table
+    IF role_id IS NOT NULL THEN
+            INSERT INTO Employee (ename, userID, roleID, hotelID, contactDetails)
+            VALUES (NEW.username, NEW.userID, role_id, 1, NEW.contactDetails);
+END IF;
+
+END IF;
+
+END;
+//
 
 DELIMITER ;
 
