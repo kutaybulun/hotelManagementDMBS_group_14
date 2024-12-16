@@ -30,6 +30,11 @@ public class AdministratorService {
         return roomTypeDataBaseAccess.create(roomType1);
     }
 
+    // Method to view all room types
+    public List<RoomType> viewRoomTypes() {
+        return roomTypeDataBaseAccess.viewRoomTypes();
+    }
+
     public boolean deleteRoom(int roomID){
         return roomDataBaseAccess.delete(roomID);
     }

@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomTypeDataBaseAccess {
 
@@ -53,6 +55,28 @@ public class RoomTypeDataBaseAccess {
             e.printStackTrace();
         }
         return 1; // If no records exist, return 1
+    }
+
+    // Method to view all room types
+    public List<RoomType> viewRoomTypes() {
+        String sql = "SELECT * FROM RoomType";
+        List<RoomType> roomTypes = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                RoomType roomType = new RoomType(
+                        resultSet.getInt("roomTypeID"),
+                        resultSet.getString("roomTypeName")
+                );
+                roomTypes.add(roomType);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roomTypes;
     }
 }
 

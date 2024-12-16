@@ -24,4 +24,12 @@ public class RoomType {
     public void setRoomTypeName(String roomTypeName) {
         this.roomTypeName = roomTypeName;
     }
+
+    @Override
+    public String toString() {
+        return "RoomType{" +
+                "roomTypeID=" + roomTypeID +
+                ", roomTypeName='" + roomTypeName + '\'' +
+                '}';
+    }
 }

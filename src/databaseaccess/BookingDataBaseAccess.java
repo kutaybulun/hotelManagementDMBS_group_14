@@ -280,5 +280,21 @@ public class BookingDataBaseAccess {
         return checkedOutBookings;
     }
 
+    public boolean cancelBooking(int bookingID, int userID) {
+        String sql = "UPDATE Booking SET reservationStatus = 'cancelled' WHERE bookingID = ? AND userID = ? AND reservationStatus = 'pending' AND paymentStatus = 'pending'";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, bookingID);
+            preparedStatement.setInt(2, userID);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            return rowsUpdated > 0; // Returns true if a booking was canceled
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

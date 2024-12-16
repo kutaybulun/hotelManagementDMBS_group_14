@@ -26,7 +26,10 @@ public class GuestService {
         int userID = userDataBaseAccess.getCurrentUserID();
         return bookingDataBaseAccess.getUserBookings(userID);
     }
-    public void cancelBooking(){}
+    public boolean cancelBooking(int bookingID) {
+        int userID = userDataBaseAccess.getCurrentUserID();
+        return bookingDataBaseAccess.cancelBooking(bookingID, userID);
+    }
 
     // Add a new booking
     public boolean addNewBooking(LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, int roomID) {

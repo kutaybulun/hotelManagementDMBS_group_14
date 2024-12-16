@@ -12,6 +12,12 @@ import java.util.List;
 
 public class HousekeepingTaskDataBaseAccess {
 
+    private final UserDataBaseAccess userDataBaseAccess;
+
+    public HousekeepingTaskDataBaseAccess() {
+        this.userDataBaseAccess = new UserDataBaseAccess();
+    }
+
     // Create a new Housekeeping Task record in the HousekeepingSchedule table
     public boolean create(HousekeepingTask housekeepingTask) {
         String sql = "INSERT INTO HousekeepingSchedule (roomID, assignedTo, scheduledDate, taskStatus) VALUES (?, ?, ?, ?)";
@@ -100,5 +106,89 @@ public class HousekeepingTaskDataBaseAccess {
         }
 
         return housekeeperTasks;
+    }
+
+    // Retrieve pending housekeeping tasks for the current housekeeper
+    public List<HousekeepingTask> getPendingTasks() {
+        int housekeeperID = userDataBaseAccess.getCurrentUserID();
+        String sql = "SELECT taskID, roomID, assignedTo, scheduledDate, taskStatus " +
+                "FROM HousekeepingSchedule " +
+                "WHERE assignedTo = ? AND taskStatus = 'pending'";
+
+        List<HousekeepingTask> tasks = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, housekeeperID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                tasks.add(new HousekeepingTask(
+                        resultSet.getInt("taskID"),
+                        resultSet.getInt("roomID"),
+                        resultSet.getInt("assignedTo"),
+                        resultSet.getDate("scheduledDate").toLocalDate(),
+                        resultSet.getString("taskStatus")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+
+    // Retrieve completed housekeeping tasks for the current housekeeper
+    public List<HousekeepingTask> getCompletedTasks() {
+        int housekeeperID = userDataBaseAccess.getCurrentUserID();
+        String sql = "SELECT taskID, roomID, assignedTo, scheduledDate, taskStatus " +
+                "FROM HousekeepingSchedule " +
+                "WHERE assignedTo = ? AND taskStatus = 'completed'";
+
+        List<HousekeepingTask> tasks = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, housekeeperID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                tasks.add(new HousekeepingTask(
+                        resultSet.getInt("taskID"),
+                        resultSet.getInt("roomID"),
+                        resultSet.getInt("assignedTo"),
+                        resultSet.getDate("scheduledDate").toLocalDate(),
+                        resultSet.getString("taskStatus")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return tasks;
+    }
+
+    // Update the status of a housekeeping task to 'completed' for the current housekeeper only
+    public boolean updateTaskStatusToCompleted(int taskID) {
+        int housekeeperID = userDataBaseAccess.getCurrentUserID();
+        String sql = "UPDATE HousekeepingSchedule " +
+                "SET taskStatus = 'completed' " +
+                "WHERE taskID = ? AND assignedTo = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, taskID);
+            preparedStatement.setInt(2, housekeeperID); // Ensure the task is assigned to the current housekeeper
+            return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

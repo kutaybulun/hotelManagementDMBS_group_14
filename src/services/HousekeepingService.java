@@ -1,18 +1,28 @@
 package services;
 import relations.*;
 import databaseaccess.*;
+import java.util.List;
 
 public class HousekeepingService {
-    //DB access objects
-    private final RoomDataBaseAccess roomDataBaseAccess;
+    private final HousekeepingTaskDataBaseAccess housekeepingTaskDataBaseAccess;
 
-    //DB access objects initialized in the constructor
     public HousekeepingService() {
-        this.roomDataBaseAccess = new RoomDataBaseAccess();
+        this.housekeepingTaskDataBaseAccess = new HousekeepingTaskDataBaseAccess();
     }
 
-    public void viewMyPendingTasks(){}
-    public void viewMyCompletedTasks(){}
-    public void updateMyTaskStatus(){}
+    // View the current user's pending tasks
+    public List<HousekeepingTask> viewMyPendingTasks() {
+        return housekeepingTaskDataBaseAccess.getPendingTasks();
+    }
+
+    // View the current user's completed tasks
+    public List<HousekeepingTask> viewMyCompletedTasks() {
+        return housekeepingTaskDataBaseAccess.getCompletedTasks();
+    }
+
+    // Update a task's status to "completed" for the current user
+    public boolean updateMyTaskStatus(int taskID) {
+        return housekeepingTaskDataBaseAccess.updateTaskStatusToCompleted(taskID);
+    }
     public void viewMyCleaningSchedule(){}
 }

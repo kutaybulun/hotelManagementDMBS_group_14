@@ -69,4 +69,7 @@ public class ReceptionistService {
     public List<HousekeeperTask> viewAllHouseKeepersRecordsAndAvailability() {
         return housekeepingTaskDataBaseAccess.getHousekeeperTaskDetails();
     }
+
+    public void checkInBooking(int bookingID) {}
+    public void checkOutBooking(int bookingID) {}
 }
