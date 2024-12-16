@@ -9,17 +9,25 @@ public class AdministratorService {
     private final RoomDataBaseAccess roomDataBaseAccess;
     private final UserDataBaseAccess userDataBaseAccess;
     private final BookingDataBaseAccess bookingDataBaseAccess;
+    private final RoomTypeDataBaseAccess roomTypeDataBaseAccess;
 
     public AdministratorService() {
         this.roomDataBaseAccess = new RoomDataBaseAccess();
         this.userDataBaseAccess = new UserDataBaseAccess();
         this.bookingDataBaseAccess = new BookingDataBaseAccess();
+        this.roomTypeDataBaseAccess = new RoomTypeDataBaseAccess();
     }
 
     public boolean addRoom(int roomTypeID, BigDecimal price, String status, int hotelID){
         int roomID = roomDataBaseAccess.getNextRoomID();
         Room room = new Room(roomID, roomTypeID, price, status, hotelID);
         return roomDataBaseAccess.create(room);
+    }
+
+    public boolean addRoomType (String roomType){
+        int roomTypeID = roomTypeDataBaseAccess.getNextRoomTypeID();
+        RoomType roomType1 = new RoomType(roomTypeID, roomType);
+        return roomTypeDataBaseAccess.create(roomType1);
     }
 
     public boolean deleteRoom(int roomID){

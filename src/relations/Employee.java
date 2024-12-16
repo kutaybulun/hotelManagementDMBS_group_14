@@ -1,20 +1,35 @@
 package relations;
 
+import java.math.BigDecimal;
+
 public class Employee {
     private int employeeID;
     private String ename;
     private String erole;
+    private BigDecimal dailysalary;
     private int hotelID;
     private String contactDetails;
 
-    public Employee(int employeeID, String name, String role, int hotelID, String contactDetails) {
+    // Constructor with all fields (used when retrieving from the database)
+    public Employee(int employeeID, String ename, String erole, BigDecimal dailysalary, int hotelID, String contactDetails) {
         this.employeeID = employeeID;
-        this.ename = name;
-        this.erole = role;
+        this.ename = ename;
+        this.erole = erole;
+        this.dailysalary = dailysalary;
         this.hotelID = hotelID;
         this.contactDetails = contactDetails;
     }
 
+    // Constructor without employeeID (used when creating a new employee)
+    public Employee(String ename, String erole, BigDecimal dailysalary, int hotelID, String contactDetails) {
+        this.ename = ename;
+        this.erole = erole;
+        this.dailysalary = dailysalary;
+        this.hotelID = hotelID;
+        this.contactDetails = contactDetails;
+    }
+
+    // Getters and Setters
     public int getEmployeeID() {
         return employeeID;
     }
@@ -23,20 +38,28 @@ public class Employee {
         this.employeeID = employeeID;
     }
 
-    public String getEName() {
+    public String getEname() {
         return ename;
     }
 
-    public void setEName(String name) {
-        this.ename = name;
+    public void setEname(String ename) {
+        this.ename = ename;
     }
 
-    public String getERole() {
+    public String getErole() {
         return erole;
     }
 
-    public void setERole(String role) {
-        this.erole = role;
+    public void setErole(String erole) {
+        this.erole = erole;
+    }
+
+    public BigDecimal getDailysalary() {
+        return dailysalary;
+    }
+
+    public void setDailysalary(BigDecimal dailysalary) {
+        this.dailysalary = dailysalary;
     }
 
     public int getHotelID() {
@@ -59,8 +82,9 @@ public class Employee {
     public String toString() {
         return "Employee{" +
                 "employeeID=" + employeeID +
-                ", name='" + ename + '\'' +
-                ", role='" + erole + '\'' +
+                ", ename='" + ename + '\'' +
+                ", erole='" + erole + '\'' +
+                ", dailysalary=" + dailysalary +
                 ", hotelID=" + hotelID +
                 ", contactDetails='" + contactDetails + '\'' +
                 '}';

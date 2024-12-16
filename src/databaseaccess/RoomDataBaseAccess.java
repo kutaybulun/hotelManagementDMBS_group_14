@@ -33,14 +33,27 @@ public class RoomDataBaseAccess {
         }
     }
 
-    // Delete a Room record by roomID
+    // Delete a Room record by roomID only if the room is not booked
     public boolean delete(int roomID) {
-        String sql = "DELETE FROM Room WHERE roomID = ?";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        String checkIfBookedSql = "SELECT COUNT(*) FROM BookedRooms WHERE roomID = ?";
+        String deleteRoomSql = "DELETE FROM Room WHERE roomID = ?";
 
-            preparedStatement.setInt(1, roomID);
-            return preparedStatement.executeUpdate() > 0;
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement checkStatement = connection.prepareStatement(checkIfBookedSql);
+             PreparedStatement deleteStatement = connection.prepareStatement(deleteRoomSql)) {
+
+            // Check if the room is booked
+            checkStatement.setInt(1, roomID);
+            ResultSet resultSet = checkStatement.executeQuery();
+            if (resultSet.next() && resultSet.getInt(1) > 0) {
+                System.out.println("Room cannot be deleted because it is currently booked.");
+                return false; // Room is booked, so we do not delete it
+            }
+
+            // Delete the room
+            deleteStatement.setInt(1, roomID);
+            return deleteStatement.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

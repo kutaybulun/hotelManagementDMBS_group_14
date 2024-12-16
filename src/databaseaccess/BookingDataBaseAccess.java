@@ -4,6 +4,7 @@ import db.DBConnection;
 import relations.*;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class BookingDataBaseAccess {
         return 1; // Default to 1 if there are no bookings in the table
     }
 
-    //query to view all booking records, returns a BookingRecord list, used in administrator service.
+    //query to view all booking records, returns a BookingRecord list, used in administrator service. also used for receptionist
     public List<BookingRecord> viewAllBookingRecords() {
         String sql =
                 "SELECT " +
@@ -197,6 +198,86 @@ public class BookingDataBaseAccess {
         }
 
         return guestBookings;
+    }
+
+    // Method to retrieve requested bookings
+    public List<RequestedBooking> getRequestedBookings() {
+        String sql = """
+            SELECT 
+                B.bookingID, 
+                B.userID, 
+                B.checkInDate, 
+                B.checkOutDate, 
+                B.numberOfGuests, 
+                BR.roomID 
+            FROM 
+                Booking B 
+                JOIN BookedRooms BR 
+                ON B.bookingID = BR.bookingID 
+            WHERE 
+                B.reservationStatus = 'pending';
+        """;
+
+        List<RequestedBooking> requestedBookings = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                RequestedBooking booking = new RequestedBooking(
+                        resultSet.getInt("bookingID"),
+                        resultSet.getInt("userID"),
+                        resultSet.getString("checkInDate"),
+                        resultSet.getString("checkOutDate"),
+                        resultSet.getInt("numberOfGuests"),
+                        resultSet.getInt("roomID")
+                );
+                requestedBookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return requestedBookings;
+    }
+
+    // Method to get checked-out bookings for a specific date
+    public List<CheckedOutBooking> getCheckedOutBookingsByDate(LocalDate checkOutDate) {
+        String sql = """
+            SELECT 
+                B.bookingID, 
+                BR.roomID, 
+                B.checkOutDate
+            FROM 
+                Booking B 
+                JOIN BookedRooms BR ON B.bookingID = BR.bookingID 
+            WHERE 
+                B.reservationStatus = 'checked-out'
+                AND B.checkOutDate = ?;
+        """;
+
+        List<CheckedOutBooking> checkedOutBookings = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            // Set the check-out date in the prepared statement
+            preparedStatement.setDate(1, java.sql.Date.valueOf(checkOutDate));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                CheckedOutBooking booking = new CheckedOutBooking(
+                        resultSet.getInt("bookingID"),
+                        resultSet.getInt("roomID"),
+                        resultSet.getString("checkOutDate")
+                );
+                checkedOutBookings.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return checkedOutBookings;
     }
 
 
