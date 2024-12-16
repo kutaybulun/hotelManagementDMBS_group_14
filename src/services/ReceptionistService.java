@@ -53,7 +53,7 @@ public class ReceptionistService {
         return bookingDataBaseAccess.getRequestedBookings();
     }
 
-    // View rooms that need to be cleaned for a specific date
+    // View rooms that need to be cleaned for a specific date to assign the room status to cleaning
     public List<CheckedOutBooking> viewRoomsToBeCleaned(LocalDate checkOutDate) {
         return bookingDataBaseAccess.getCheckedOutBookingsByDate(checkOutDate);
     }
