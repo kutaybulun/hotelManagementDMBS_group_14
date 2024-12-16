@@ -1,7 +1,4 @@
-import services.UserService;
-import services.GuestService;
-import services.AdministratorService;
-import services.ReceptionistService;
+import services.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +10,7 @@ public class Main {
     private static final GuestService guestService = new GuestService();
     private static final AdministratorService adminService = new AdministratorService();
     private static final ReceptionistService receptionistService = new ReceptionistService();
+    private static final HousekeepingService housekeepingService = new HousekeepingService();
 
     public static void main(String[] args) {
         boolean isRunning = true;
@@ -71,6 +69,7 @@ public class Main {
                 case "administrator" -> adminMenu();
                 case "guest" -> guestMenu();
                 case "receptionist" -> receptionistMenu();
+                case "housekeeping" -> housekeepingMenu();
                 default -> System.out.println("This role has no associated functionalities at the moment.");
             }
         } else {
@@ -181,8 +180,35 @@ public class Main {
             }
         }
     }
+    //--- HOUSEKEEPING MENU ---
+    private static void housekeepingMenu() {
+        boolean isHousekeepingActive = true;
+        while (isHousekeepingActive) {
+            System.out.println("\n--- Housekeeping Menu ---");
+            System.out.println("1. View My Pending Tasks");
+            System.out.println("2. View My Completed Tasks");
+            System.out.println("3. Update Task Status to Completed");
+            System.out.println("4. Logout");
+            System.out.print("Enter your choice: ");
 
-    // --- RECEPTIONIST STATIC METHODS --
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Clear the buffer
+
+            switch (choice) {
+                case 1 -> viewMyPendingTasks();
+                case 2 -> viewMyCompletedTasks();
+                case 3 -> updateMyTaskStatus();
+                case 4 -> {
+                    System.out.println("Logging out...");
+                    userService.logOut();
+                    isHousekeepingActive = false;
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    // --- STATIC METHODS FOR RECEPTIONIST MENU ---
     private static void viewRequestedBookings() {
         receptionistService.viewRequestedBookings().forEach(System.out::println);
     }
@@ -331,5 +357,21 @@ public class Main {
         } else {
             roomTypes.forEach(System.out::println);
         }
+    }
+
+    // --- STATIC METHODS FOR HOUSEKEEPING MENU ---
+    private static void viewMyPendingTasks() {
+        housekeepingService.viewMyPendingTasks().forEach(System.out::println);
+    }
+
+    private static void viewMyCompletedTasks() {
+        housekeepingService.viewMyCompletedTasks().forEach(System.out::println);
+    }
+
+    private static void updateMyTaskStatus() {
+        System.out.print("Enter Task ID to mark as completed: ");
+        int taskID = scanner.nextInt();
+        boolean success = housekeepingService.updateMyTaskStatus(taskID);
+        System.out.println(success ? "Task updated successfully!" : "Failed to update task status. Make sure the task is assigned to you.");
     }
 }
