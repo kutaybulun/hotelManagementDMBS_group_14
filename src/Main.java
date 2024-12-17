@@ -296,8 +296,31 @@ public class Main {
     }
 
     private static void viewAvailableRooms() {
-        var rooms = guestService.viewAvailableRooms(LocalDate.now(), LocalDate.now().plusDays(7));
-        rooms.forEach(System.out::println);
+        try {
+            System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
+            LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+
+            System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
+            LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+
+            // Ensure check-out date is after check-in date
+            if (!checkOutDate.isAfter(checkInDate)) {
+                System.out.println("Check-Out date must be after Check-In date. Please try again.");
+                return; // Exit the method early
+            }
+
+            var rooms = guestService.viewAvailableRooms(checkInDate, checkOutDate);
+
+            if (rooms.isEmpty()) {
+                System.out.println("No available rooms for the specified dates.");
+            } else {
+                System.out.println("\n--- Available Rooms ---");
+                rooms.forEach(System.out::println);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+        }
     }
 
     private static void viewMyBookings() {

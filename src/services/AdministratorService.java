@@ -72,4 +72,8 @@ public class AdministratorService {
     public List<EmployeeWithRole> viewAllEmployeesWithRole() {
         return employeeDataBaseAccess.viewAllEmployeesWithRoles();
     }
+
+    public boolean updateEmployeeHotel(int employeeID, int hotelID){
+        return false;
+    }
 }
