@@ -3,6 +3,8 @@ import services.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -244,13 +246,23 @@ public class Main {
     private static void addNewBookingByReceptionist() {
         System.out.print("Enter User ID: ");
         int userID = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
-        LocalDate checkInDate = LocalDate.parse(scanner.next());
+        LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+
         System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
-        LocalDate checkOutDate = LocalDate.parse(scanner.next());
-        System.out.print("Enter Room ID: ");
-        int roomID = scanner.nextInt();
-        boolean success = receptionistService.addNewBooking(userID, checkInDate, checkOutDate, 1, roomID);
+        LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Enter number of guests: ");
+        int numberOfGuests = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
+        System.out.print("Enter Room IDs (comma-separated, e.g., 1,2,3): ");
+        String roomIDsInput = scanner.nextLine();
+        List<Integer> roomIDs = parseRoomIDs(roomIDsInput);
+
+        boolean success = receptionistService.addNewBooking(userID, checkInDate, checkOutDate, numberOfGuests, roomIDs);
         System.out.println(success ? "Booking added successfully!" : "Failed to add booking.");
     }
 
@@ -321,13 +333,19 @@ public class Main {
     private static void addNewBooking() {
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
         LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+
         System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
         LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+
         System.out.print("Enter number of guests: ");
         int numberOfGuests = scanner.nextInt();
-        System.out.print("Enter Room ID: ");
-        int roomID = scanner.nextInt();
-        boolean success = guestService.addNewBooking(checkInDate, checkOutDate, numberOfGuests, roomID);
+        scanner.nextLine(); // Clear the buffer
+
+        System.out.print("Enter Room IDs (comma-separated, e.g., 1,2,3): ");
+        String roomIDsInput = scanner.nextLine();
+        List<Integer> roomIDs = parseRoomIDs(roomIDsInput);
+
+        boolean success = guestService.addNewBooking(checkInDate, checkOutDate, numberOfGuests, roomIDs);
         System.out.println(success ? "Booking added successfully!" : "Failed to add booking.");
     }
 
@@ -516,6 +534,21 @@ public class Main {
         boolean success = housekeepingService.updateMyTaskStatus(taskID);
         System.out.println(success ? "Task updated successfully!" : "Failed to update task status. Make sure the task is assigned to you.");
     }
+
+    // Helper method to parse room IDs entered as a comma-separated string (e.g., "1,2,3")
+    private static List<Integer> parseRoomIDs(String roomIDsInput) {
+        List<Integer> roomIDs = new ArrayList<>();
+        String[] roomIDStrings = roomIDsInput.split(",");
+        for (String idStr : roomIDStrings) {
+            try {
+                roomIDs.add(Integer.parseInt(idStr.trim())); // Parse and trim each room ID
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid room ID format: " + idStr);
+            }
+        }
+        return roomIDs;
+    }
+
 
 
 }

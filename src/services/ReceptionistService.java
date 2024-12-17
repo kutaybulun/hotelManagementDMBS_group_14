@@ -23,7 +23,8 @@ public class ReceptionistService {
         this.paymentDataBaseAccess = new PaymentDataBaseAccess();
     }
 
-    public boolean addNewBooking(int userID, LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, int roomID) {
+    // Add a new booking for multiple rooms by a receptionist
+    public boolean addNewBooking(int userID, LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, List<Integer> roomIDs) {
         int bookingID = bookingDataBaseAccess.getNextBookingID(); // Get next available booking ID
         String paymentStatus = "pending";
         String reservationStatus = "pending";
@@ -32,13 +33,20 @@ public class ReceptionistService {
         boolean isBookingCreated = bookingDataBaseAccess.create(new Booking(bookingID, userID, checkInDate, checkOutDate, numberOfGuests, paymentStatus, reservationStatus));
 
         if (isBookingCreated) {
-            // 2. Link the booking to the room via BookedRooms
-            boolean isRoomBooked = bookedRoomsDataBaseAccess.create(new BookedRooms(bookingID, roomID));
+            boolean allRoomsBooked = true;
+            // 2. Link the booking to multiple rooms via BookedRooms
+            for (int roomID : roomIDs) {
+                boolean isRoomBooked = bookedRoomsDataBaseAccess.create(new BookedRooms(bookingID, roomID));
+                if (!isRoomBooked) {
+                    allRoomsBooked = false;
+                    break;
+                }
+            }
 
-            if (isRoomBooked) {
+            if (allRoomsBooked) {
                 return true; // Booking was successful
             } else {
-                // Rollback the booking if room could not be linked
+                // Rollback the booking if at least one room could not be linked
                 bookingDataBaseAccess.delete(bookingID);
             }
         }

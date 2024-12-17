@@ -32,11 +32,10 @@ public class GuestService {
         return bookingDataBaseAccess.cancelBooking(bookingID, userID);
     }
 
-    // Add a new booking
-    public boolean addNewBooking(LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, int roomID) {
+    // Add a new booking for multiple rooms
+    public boolean addNewBooking(LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, List<Integer> roomIDs) {
         int bookingID = bookingDataBaseAccess.getNextBookingID(); // Get next available booking ID
         int userID = userDataBaseAccess.getCurrentUserID();
-        System.out.println("Current User ID: " + userID); // Debug line to verify userID
         String paymentStatus = "pending";
         String reservationStatus = "pending";
 
@@ -44,13 +43,20 @@ public class GuestService {
         boolean isBookingCreated = bookingDataBaseAccess.create(new Booking(bookingID, userID, checkInDate, checkOutDate, numberOfGuests, paymentStatus, reservationStatus));
 
         if (isBookingCreated) {
-            // 2. Link the booking to the room via BookedRooms
-            boolean isRoomBooked = bookedRoomsDataBaseAccess.create(new BookedRooms(bookingID, roomID));
+            boolean allRoomsBooked = true;
+            // 2. Link the booking to the multiple rooms via BookedRooms
+            for (int roomID : roomIDs) {
+                boolean isRoomBooked = bookedRoomsDataBaseAccess.create(new BookedRooms(bookingID, roomID));
+                if (!isRoomBooked) {
+                    allRoomsBooked = false;
+                    break;
+                }
+            }
 
-            if (isRoomBooked) {
+            if (allRoomsBooked) {
                 return true; // Booking was successful
             } else {
-                // Rollback the booking if room could not be linked
+                // Rollback the booking if at least one room could not be linked
                 bookingDataBaseAccess.delete(bookingID);
             }
         }
