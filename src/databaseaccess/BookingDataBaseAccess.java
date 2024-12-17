@@ -505,8 +505,22 @@ public class BookingDataBaseAccess {
         return hotelStarRatings;
     }
 
+    public List<Integer> getRoomsWithCleaningStatus() {
+        String sql = "SELECT roomID FROM Room WHERE roomStatus = 'cleaning'";
+        List<Integer> roomIDs = new ArrayList<>();
 
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
+            while (resultSet.next()) {
+                roomIDs.add(resultSet.getInt("roomID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        return roomIDs;
+    }
 
 }

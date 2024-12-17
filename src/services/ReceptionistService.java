@@ -100,15 +100,16 @@ public class ReceptionistService {
     }
 
     // View rooms that need to be cleaned for a specific date to assign the room status to cleaning
-    public List<CheckedOutBooking> viewRoomsToBeCleaned(LocalDate checkOutDate) {
-        return bookingDataBaseAccess.getCheckedOutBookingsByDate(checkOutDate);
+    public List<Integer> viewRoomsToBeCleaned() {
+        return bookingDataBaseAccess.getRoomsWithCleaningStatus();
     }
 
-    public boolean assignHouseKeepingTask(int roomID, int assignedTo, LocalDate scheduledDate, String taskStatus) {
-        int housekeeperID = housekeepingTaskDataBaseAccess.getNextTaskID();
-        HousekeepingTask housekeeping = new HousekeepingTask(housekeeperID, roomID, assignedTo, scheduledDate, taskStatus);
-        return housekeepingTaskDataBaseAccess.create(housekeeping);
+    public boolean assignHouseKeepingTask(int roomID, int userID, LocalDate scheduledDate, String taskStatus) {
+        return housekeepingTaskDataBaseAccess.create(new HousekeepingTask(0, roomID, userID, scheduledDate, taskStatus))
+                && roomDataBaseAccess.updateRoomStatus(roomID, "cleaning");
     }
+
+
 
     public List<HousekeeperTask> viewAllHouseKeepersRecordsAndAvailability() {
         return housekeepingTaskDataBaseAccess.getHousekeeperTaskDetails();

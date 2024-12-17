@@ -99,7 +99,9 @@ public class Main {
             System.out.println("13. Generate Monthly Revenue Report");
             System.out.println("14. View All Housekeeping Records");
             System.out.println("15. View Hotel Star Ratings");
-            System.out.println("16. Logout");
+            System.out.println("16. Create Hotel");
+            System.out.println("17. Manage Room Status");
+            System.out.println("18. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -121,7 +123,9 @@ public class Main {
                 case 13 -> generateMonthlyRevenueReport();
                 case 14 -> viewAllHousekeepingRecords();
                 case 15 -> viewHotelStarRatings();
-                case 16-> {
+                case 16 -> createHotel();
+                case 17 -> manageRoomStatus();
+                case 18-> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -244,7 +248,12 @@ public class Main {
     }
 
     private static void viewRoomsToBeCleaned() {
-        receptionistService.viewRoomsToBeCleaned(LocalDate.now()).forEach(System.out::println);
+        List<Integer> roomIDs = receptionistService.viewRoomsToBeCleaned();
+        if (roomIDs.isEmpty()) {
+            System.out.println("No rooms currently marked for cleaning.");
+        } else {
+            roomIDs.forEach(roomID -> System.out.println("Room ID: " + roomID));
+        }
     }
 
     private static void viewHousekeepersAndAvailability() {
@@ -430,6 +439,36 @@ public class Main {
     }
 
     // --- STATIC METHODS FOR ADMIN MENU ---
+    private static void createHotel() {
+        System.out.print("Enter Hotel Name: ");
+        String hotelName = scanner.nextLine();
+        System.out.print("Enter Street: ");
+        String street = scanner.nextLine();
+        System.out.print("Enter City: ");
+        String city = scanner.nextLine();
+        System.out.print("Enter State: ");
+        String state = scanner.nextLine();
+        System.out.print("Enter Contact Number: ");
+        String contactNumber = scanner.nextLine();
+        boolean success = adminService.createHotel(hotelName, street, city, state, contactNumber);
+
+        if (success) {
+            System.out.println("Hotel created successfully!");
+        } else {
+            System.out.println("Error: Failed to create hotel. Please check all inputs and try again.");
+        }
+    }
+    private static void manageRoomStatus() {
+        System.out.print("Enter Room ID to update: ");
+        int roomID = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
+        System.out.print("Enter New Room Type ID: ");
+        int newRoomTypeID = scanner.nextInt();
+
+        boolean success = adminService.updateRoomType(roomID, newRoomTypeID);
+        System.out.println(success ? "Room type updated successfully!" : "Error: Failed to update room type. Please check the details and try again.");
+    }
 
     private static void addRoom() {
         System.out.print("Enter Room Type ID: ");

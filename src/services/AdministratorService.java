@@ -24,6 +24,10 @@ public class AdministratorService {
         this.hotelDataBaseAccess = new HotelDataBaseAccess();
         this.paymentDataBaseAccess = new PaymentDataBaseAccess();
     }
+    public boolean createHotel(String hotelName, String street, String city, String state, String contactNumber) {
+        int addressID = hotelDataBaseAccess.createAddress(new Address(0, street, city, state));
+        return addressID != -1 && hotelDataBaseAccess.createHotel(new Hotel(0, hotelName, addressID, contactNumber));
+    }
 
     public boolean addRoom(int roomTypeID, BigDecimal price, String status, int hotelID){
         int roomID = roomDataBaseAccess.getNextRoomID();
@@ -123,6 +127,9 @@ public class AdministratorService {
 
     public List<HotelStarRating> viewStarRatingsForHotels() {
         return bookingDataBaseAccess.calculateHotelStarRatings();
+    }
+    public boolean updateRoomType(int roomID, int newRoomTypeID) {
+        return roomDataBaseAccess.updateRoomType(roomID, newRoomTypeID);
     }
 
 
