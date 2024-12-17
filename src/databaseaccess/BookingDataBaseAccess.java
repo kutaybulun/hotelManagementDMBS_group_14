@@ -3,6 +3,7 @@ package databaseaccess;
 import db.DBConnection;
 import relations.*;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -356,6 +357,69 @@ public class BookingDataBaseAccess {
             e.printStackTrace();
         }
         return roomIDs;
+    }
+
+    //for receptionists to see the amount to pay or a booking
+    public BigDecimal getTotalPayment(int bookingID) {
+        String sql = """
+        SELECT 
+            SUM(DATEDIFF(B.checkOutDate, B.checkInDate) * R.price) AS totalPayment
+        FROM 
+            Booking B
+            JOIN BookedRooms BR ON B.bookingID = BR.bookingID
+            JOIN Room R ON BR.roomID = R.roomID
+        WHERE 
+            B.bookingID = ? 
+            AND B.paymentStatus != 'paid'
+        GROUP BY 
+            B.bookingID;
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, bookingID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal("totalPayment");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO; // If no payment is found, return 0
+    }
+    //for guests to see the amount to pay or a booking
+    public BigDecimal getTotalPaymentForGuest(int userID, int bookingID) {
+        String sql = """
+        SELECT 
+            SUM(DATEDIFF(B.checkOutDate, B.checkInDate) * R.price) AS totalPayment
+        FROM 
+            Booking B
+            JOIN BookedRooms BR ON B.bookingID = BR.bookingID
+            JOIN Room R ON BR.roomID = R.roomID
+        WHERE 
+            B.bookingID = ? 
+            AND B.userID = ?
+            AND B.paymentStatus != 'paid'
+        GROUP BY 
+            B.bookingID;
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, bookingID);
+            preparedStatement.setInt(2, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal("totalPayment");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO; // Return 0 if no payment is found
     }
 
 

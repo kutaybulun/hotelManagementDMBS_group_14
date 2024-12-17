@@ -132,7 +132,8 @@ public class Main {
             System.out.println("6. Assign Housekeeping Task");
             System.out.println("7. Modify Booking (Check-In / Check-Out)");
             System.out.println("8. Delete Booking");
-            System.out.println("9. Logout");
+            System.out.println("9. View Due Payment for a Booking");
+            System.out.println("10. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -147,7 +148,8 @@ public class Main {
                 case 6 -> assignHousekeepingTask();
                 case 7 -> modifyBooking();
                 case 8 -> deleteBooking();
-                case 9 -> {
+                case 9 -> viewTotalPaymentForReceptionist();
+                case 10 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isReceptionistActive = false;
@@ -166,7 +168,8 @@ public class Main {
             System.out.println("2. View Available Rooms");
             System.out.println("3. View My Bookings");
             System.out.println("4. Cancel Booking");
-            System.out.println("5. Logout");
+            System.out.println("5. View Payment Due For a Booking");
+            System.out.println("6. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -177,7 +180,8 @@ public class Main {
                 case 2 -> viewAvailableRooms();
                 case 3 -> viewMyBookings();
                 case 4 -> cancelBooking();
-                case 5 -> {
+                case 5 -> viewTotalPaymentForGuest(); // New option
+                case 6 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isGuestActive = false;
@@ -281,6 +285,20 @@ public class Main {
             }
         }
     }
+
+    private static void viewTotalPaymentForReceptionist() {
+        System.out.print("Enter Booking ID to view payment: ");
+        int bookingID = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
+        BigDecimal totalPayment = receptionistService.getTotalPayment(bookingID);
+        if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
+        } else {
+            System.out.println("No payment found for the given booking ID.");
+        }
+    }
+
     // --- STATIC METHODS FOR GUEST MENU ---
     private static void addNewBooking() {
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
@@ -336,6 +354,21 @@ public class Main {
             System.out.println("Booking canceled successfully!");
         } else {
             System.out.println("Failed to cancel booking. Ensure it is your booking, pending, and unpaid.");
+        }
+    }
+
+    private static void viewTotalPaymentForGuest() {
+        System.out.print("Enter Booking ID to view payment: ");
+        int bookingID = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
+        BigDecimal totalPayment = guestService.getTotalPayment(bookingID);
+        if (totalPayment == null) {
+            System.out.println("You do not have permission to view the payment for this booking. Please enter a valid booking ID that belongs to you.");
+        } else if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
+        } else {
+            System.out.println("No payment found for the given booking ID.");
         }
     }
 

@@ -2,6 +2,7 @@ package services;
 import relations.*;
 import databaseaccess.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -55,4 +56,11 @@ public class GuestService {
         }
         return false; // Booking failed
     }
+
+    public BigDecimal getTotalPayment(int bookingID) {
+        int userID = userDataBaseAccess.getCurrentUserID();
+        BigDecimal totalPayment = bookingDataBaseAccess.getTotalPaymentForGuest(userID, bookingID);
+        return totalPayment != null ? totalPayment : null; // Return null if booking does not belong to the user
+    }
+
 }

@@ -2,6 +2,7 @@ package services;
 import relations.*;
 import databaseaccess.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -92,8 +93,6 @@ public class ReceptionistService {
         return bookingDataBaseAccess.getCheckedOutBookingsByDate(checkOutDate);
     }
 
-    public void processPayment() {}
-
     public boolean assignHouseKeepingTask(int roomID, int assignedTo, LocalDate scheduledDate, String taskStatus) {
         int housekeeperID = housekeepingTaskDataBaseAccess.getNextTaskID();
         HousekeepingTask housekeeping = new HousekeepingTask(housekeeperID, roomID, assignedTo, scheduledDate, taskStatus);
@@ -103,6 +102,12 @@ public class ReceptionistService {
     public List<HousekeeperTask> viewAllHouseKeepersRecordsAndAvailability() {
         return housekeepingTaskDataBaseAccess.getHousekeeperTaskDetails();
     }
+
+    public BigDecimal getTotalPayment(int bookingID) {
+        return bookingDataBaseAccess.getTotalPayment(bookingID);
+    }
+
+    public void processPayment() {}
 
 
 }
