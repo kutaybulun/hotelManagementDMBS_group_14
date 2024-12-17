@@ -100,7 +100,6 @@ public class HotelDataBaseAccess {
     }
 
     // View all hotels along with their addresses
-    // View all hotels along with their addresses
     public List<HotelWithAddress> viewAllHotelsWithAddresses() {
         List<HotelWithAddress> hotelList = new ArrayList<>();
         String sql = """

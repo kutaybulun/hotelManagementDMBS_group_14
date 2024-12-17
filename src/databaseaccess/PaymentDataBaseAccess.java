@@ -3,6 +3,7 @@ package databaseaccess;
 import db.DBConnection;
 import relations.Payment;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,5 +57,41 @@ public class PaymentDataBaseAccess {
         }
         return 1; // Default to 1 if there are no bookings in the table
     }
+
+    // PaymentDataBaseAccess.java
+
+    public BigDecimal getTotalRevenue(int hotelID, int year, int month) {
+        String sql = """
+        SELECT 
+            SUM(P.amount) AS totalRevenue
+        FROM 
+            Payment P
+            JOIN Booking B ON P.bookingID = B.bookingID
+            JOIN BookedRooms BR ON B.bookingID = BR.bookingID
+            JOIN Room R ON BR.roomID = R.roomID
+        WHERE 
+            R.hotelID = ? 
+            AND YEAR(P.paymentDate) = ? 
+            AND MONTH(P.paymentDate) = ?;
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, hotelID);
+            preparedStatement.setInt(2, year);
+            preparedStatement.setInt(3, month);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal("totalRevenue");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO; // Return 0 if no revenue is found
+    }
+
 
 }

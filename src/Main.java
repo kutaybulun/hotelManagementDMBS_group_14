@@ -96,7 +96,8 @@ public class Main {
             System.out.println("10. View All Employees With Role");
             System.out.println("11. Update Employee Hotel");
             System.out.println("12. View Hotels with Addresses");
-            System.out.println("13. Logout");
+            System.out.println("13. Generate Monthly Revenue Report");
+            System.out.println("14. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -115,7 +116,8 @@ public class Main {
                 case 10 -> viewAllEmployeesWithRole();
                 case 11 -> updateEmployeeHotel();
                 case 12 -> viewAllHotelsWithAddress();
-                case 13 -> {
+                case 13 -> generateMonthlyRevenueReport();
+                case 14 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -515,6 +517,32 @@ public class Main {
             System.out.println("Employee's hotel updated successfully!");
         } else {
             System.out.println("Failed to update employee's hotel. Please check the employee ID and Hotel ID and try again.");
+        }
+    }
+
+    private static void generateMonthlyRevenueReport() {
+        System.out.println("\n--- Generate Monthly Revenue Report ---");
+
+        System.out.print("Enter Year (YYYY): ");
+        int year = scanner.nextInt();
+
+        System.out.print("Enter Month (1-12): ");
+        int month = scanner.nextInt();
+
+        if (month < 1 || month > 12) {
+            System.out.println("Invalid month. Please enter a value between 1 and 12.");
+            return;
+        }
+
+        var reportList = adminService.generateMonthlyRevenueReport(year, month);
+
+        if (reportList.isEmpty()) {
+            System.out.println("No report data available for the given month and year.");
+        } else {
+            System.out.println("\n--- Monthly Revenue Report for " + month + "/" + year + " ---");
+            for (var report : reportList) {
+                System.out.println(report);
+            }
         }
     }
 

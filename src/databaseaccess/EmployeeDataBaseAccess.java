@@ -3,6 +3,7 @@ package databaseaccess;
 import db.DBConnection;
 import relations.*;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +127,38 @@ public class EmployeeDataBaseAccess {
             return false; // Return false if an error occurs
         }
     }
+
+    // EmployeeDataBaseAccess.java
+
+    public BigDecimal getTotalSalaryExpense(int hotelID, int year, int month) {
+        String sql = """
+        SELECT 
+            SUM(R.dailySalary * DAY(LAST_DAY(DATE(CONCAT(?, '-', ?, '-01'))))) AS totalExpenses
+        FROM 
+            Employee E
+            JOIN EmployeeRole R ON E.roleID = R.roleID
+        WHERE 
+            E.hotelID = ?
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, year);
+            preparedStatement.setInt(2, month);
+            preparedStatement.setInt(3, hotelID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal("totalExpenses");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO; // If no payment is found, return 0
+    }
+
+
 
 
 }

@@ -3,6 +3,7 @@ import relations.*;
 import databaseaccess.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdministratorService {
@@ -12,6 +13,7 @@ public class AdministratorService {
     private final BookingDataBaseAccess bookingDataBaseAccess;
     private final RoomTypeDataBaseAccess roomTypeDataBaseAccess;
     private final HotelDataBaseAccess hotelDataBaseAccess;
+    private final PaymentDataBaseAccess paymentDataBaseAccess;
 
     public AdministratorService() {
         this.roomDataBaseAccess = new RoomDataBaseAccess();
@@ -20,6 +22,7 @@ public class AdministratorService {
         this.roomTypeDataBaseAccess = new RoomTypeDataBaseAccess();
         this.employeeDataBaseAccess = new EmployeeDataBaseAccess();
         this.hotelDataBaseAccess = new HotelDataBaseAccess();
+        this.paymentDataBaseAccess = new PaymentDataBaseAccess();
     }
 
     public boolean addRoom(int roomTypeID, BigDecimal price, String status, int hotelID){
@@ -59,8 +62,6 @@ public class AdministratorService {
         return userDataBaseAccess.viewAllUsers();
     }
 
-    public void generateRevenueReport(){}
-
     public List<BookingRecord> viewAllBookingRecords(){
         return bookingDataBaseAccess.viewAllBookingRecords();
     }
@@ -84,4 +85,38 @@ public class AdministratorService {
     public List<HotelWithAddress> viewAllHotelsWithAddress() {
         return hotelDataBaseAccess.viewAllHotelsWithAddresses();
     }
+
+    public List<MonthlyRevenueReport> generateMonthlyRevenueReport(int year, int month) {
+        List<MonthlyRevenueReport> reportList = new ArrayList<>();
+
+        // Get all hotels with addresses
+        var hotels = hotelDataBaseAccess.viewAllHotelsWithAddresses();
+        for (var hotel : hotels) {
+            int hotelID = hotel.getHotelID();
+            String hotelName = hotel.getHotelName();
+
+            // Get total revenue for the hotel
+            BigDecimal totalRevenue = paymentDataBaseAccess.getTotalRevenue(hotelID, year, month);
+            if (totalRevenue == null) {
+                totalRevenue = BigDecimal.ZERO; // Default to 0 if no revenue
+            }
+
+            // Get total salary expense for the hotel
+            BigDecimal totalExpenses = employeeDataBaseAccess.getTotalSalaryExpense(hotelID, year, month);
+            if (totalExpenses == null) {
+                totalExpenses = BigDecimal.ZERO; // Default to 0 if no expenses
+            }
+
+            // Calculate profit (revenue - expenses)
+            BigDecimal profit = totalRevenue.subtract(totalExpenses);
+
+            // Create the report
+            MonthlyRevenueReport report = new MonthlyRevenueReport(hotelName, totalRevenue, totalExpenses, profit);
+            reportList.add(report);
+        }
+
+        return reportList;
+    }
+
+
 }
