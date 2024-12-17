@@ -1,7 +1,8 @@
 package services;
 import relations.*;
 import databaseaccess.*;
-
+import java.sql.*;
+import db.DBConnection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -112,29 +113,62 @@ public class ReceptionistService {
     //payment status for a booking will be paid and related payment will be added to the payment table
     public boolean processPayment(int bookingID) {
         int paymentID = paymentDataBaseAccess.getNextPaymentID();
-        // 1. Calculate the total payment for the booking
-        BigDecimal totalPayment = bookingDataBaseAccess.getTotalPayment(bookingID);
-        if (totalPayment.compareTo(BigDecimal.ZERO) == 0) {
-            return false; // No payment due, so return false
-        }
+        Connection connection = null;
 
-        // 2. Insert the payment into the Payment table
-        Payment payment = new Payment(paymentID, bookingID, totalPayment, LocalDate.now());
-        boolean isPaymentInserted = paymentDataBaseAccess.create(payment);
+        try {
+            // 1. Establish a connection and start a transaction
+            connection = DBConnection.getConnection();
+            connection.setAutoCommit(false); // Disable auto-commit
 
-        if (!isPaymentInserted) {
-            return false; // Return false if payment insertion failed
-        }
+            // 2. Calculate the total payment for the booking
+            BigDecimal totalPayment = bookingDataBaseAccess.getTotalPayment(bookingID);
+            if (totalPayment.compareTo(BigDecimal.ZERO) == 0) {
+                connection.rollback();
+                return false; // No payment due, so rollback and return false
+            }
 
-        // 3. Update the booking's paymentStatus to 'paid'
-        boolean isBookingUpdated = bookingDataBaseAccess.updatePaymentStatus(bookingID, "paid");
+            // 3. Insert the payment into the Payment table
+            Payment payment = new Payment(paymentID, bookingID, totalPayment, LocalDate.now());
+            boolean isPaymentInserted = paymentDataBaseAccess.create(payment, connection);
 
-        if (!isBookingUpdated) {
+            if (!isPaymentInserted) {
+                connection.rollback();
+                return false; // Rollback if payment insertion failed
+            }
+
+            // 4. Update the booking's paymentStatus to 'paid'
+            boolean isBookingUpdated = bookingDataBaseAccess.updatePaymentStatus(bookingID, "paid", connection);
+
+            if (!isBookingUpdated) {
+                connection.rollback();
+                return false; // Rollback if booking update failed
+            }
+
+            // 5. Commit the transaction since all steps were successful
+            connection.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (connection != null) connection.rollback(); // Rollback if any error occurs
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
             return false;
-        }
 
-        return true; // Payment was successfully processed
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true); // Reset auto-commit to default
+                    connection.close(); // Close the connection
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
 
 }

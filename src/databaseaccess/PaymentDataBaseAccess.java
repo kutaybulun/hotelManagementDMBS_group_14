@@ -11,10 +11,9 @@ import java.sql.SQLException;
 public class PaymentDataBaseAccess {
 
     // Create a new Payment record in the Payment table
-    public boolean create(Payment payment) {
+    public boolean create(Payment payment, Connection connection) {
         String sql = "INSERT INTO Payment (bookingID, amount, paymentDate) VALUES (?, ?, ?)";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, payment.getBookingID());
             preparedStatement.setBigDecimal(2, payment.getAmount());
