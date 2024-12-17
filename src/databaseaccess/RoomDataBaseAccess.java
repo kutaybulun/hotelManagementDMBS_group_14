@@ -115,5 +115,18 @@ public class RoomDataBaseAccess {
 
         return availableRooms;
     }
+    public boolean updateRoomStatus(int roomID, String newStatus) {
+        String sql = "UPDATE Room SET roomStatus = ? WHERE roomID = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
+            preparedStatement.setString(1, newStatus);
+            preparedStatement.setInt(2, roomID);
+
+            return preparedStatement.executeUpdate() > 0; // Returns true if the update was successful
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

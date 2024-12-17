@@ -130,7 +130,9 @@ public class Main {
             System.out.println("4. View All Bookings");
             System.out.println("5. Add New Booking");
             System.out.println("6. Assign Housekeeping Task");
-            System.out.println("7. Logout");
+            System.out.println("7. Modify Booking (Check-In / Check-Out)");
+            System.out.println("8. Delete Booking");
+            System.out.println("9. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -143,7 +145,9 @@ public class Main {
                 case 4 -> viewAllBookings();
                 case 5 -> addNewBookingByReceptionist();
                 case 6 -> assignHousekeepingTask();
-                case 7 -> {
+                case 7 -> modifyBooking();
+                case 8 -> deleteBooking();
+                case 9 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isReceptionistActive = false;
@@ -250,7 +254,33 @@ public class Main {
         boolean success = receptionistService.assignHouseKeepingTask(roomID, userID, date, "pending");
         System.out.println(success ? "Task assigned successfully!" : "Failed to assign task.");
     }
+    private static void deleteBooking() {
+        System.out.print("Enter Booking ID to delete: ");
+        int bookingID = scanner.nextInt();
+        boolean success = receptionistService.deleteBooking(bookingID);
+        System.out.println(success ? "Booking deleted successfully!" :
+                "Error: Only cancelled bookings can be deleted.");
+    }
 
+    private static void modifyBooking() {
+        System.out.print("Enter Booking ID: ");
+        int bookingID = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Choose action (check-in / check-out): ");
+        String action = scanner.nextLine().trim().toLowerCase();
+        boolean success = receptionistService.modifyBooking(bookingID, action);
+        if (success) {
+            System.out.println("Booking updated successfully for action: " + action);
+        } else {
+            if ("check-in".equals(action)) {
+                System.out.println("Error: Booking must be pending to check-in.");
+            } else if ("check-out".equals(action)) {
+                System.out.println("Error: Payment must be completed before check-out.");
+            } else {
+                System.out.println("Invalid action. Please enter 'check-in' or 'check-out'.");
+            }
+        }
+    }
     // --- STATIC METHODS FOR GUEST MENU ---
     private static void addNewBooking() {
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");

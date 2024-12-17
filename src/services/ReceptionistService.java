@@ -41,9 +41,43 @@ public class ReceptionistService {
         return false; // Booking failed
     }
 
-    public void modifyBooking() {}
+    public boolean deleteBooking(int bookingID) {
+        Booking booking = bookingDataBaseAccess.getBookingByID(bookingID);
+        if (booking != null && "cancelled".equals(booking.getReservationStatus())) {
+            return bookingDataBaseAccess.delete(bookingID);
+        }
+        return false; // Deletion is allowed only if cancelled
+    }
+    public boolean modifyBooking(int bookingID, String action) {
+        if ("check-in".equalsIgnoreCase(action)) {
+            return checkInBooking(bookingID);
+        } else if ("check-out".equalsIgnoreCase(action)) {
+            return checkOutBooking(bookingID);
+        }
+        return false;
+    }
 
-    public void deleteBooking() {}
+    private boolean checkInBooking(int bookingID) {
+        Booking booking = bookingDataBaseAccess.getBookingByID(bookingID);
+        if (booking != null && "pending".equals(booking.getReservationStatus())) {
+            booking.setReservationStatus("checked-in");
+            return bookingDataBaseAccess.update(booking);
+        }
+        return false;
+    }
+
+    private boolean checkOutBooking(int bookingID) {
+        Booking booking = bookingDataBaseAccess.getBookingByID(bookingID);
+        if (booking != null && "paid".equals(booking.getPaymentStatus())) {
+            booking.setReservationStatus("checked-out");
+            if (bookingDataBaseAccess.update(booking)) {
+                bookingDataBaseAccess.getRoomIDsByBookingID(bookingID)
+                        .forEach(roomID -> roomDataBaseAccess.updateRoomStatus(roomID, "cleaning"));
+                return true;
+            }
+        }
+        return false;
+    }
 
     public List<BookingRecord> viewAllBookings(){
         return bookingDataBaseAccess.viewAllBookingRecords();
@@ -70,6 +104,5 @@ public class ReceptionistService {
         return housekeepingTaskDataBaseAccess.getHousekeeperTaskDetails();
     }
 
-    public void checkInBooking(int bookingID) {}
-    public void checkOutBooking(int bookingID) {}
+
 }

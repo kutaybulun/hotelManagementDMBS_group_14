@@ -296,5 +296,67 @@ public class BookingDataBaseAccess {
         }
     }
 
+    public Booking getBookingByID(int bookingID) {
+        String sql = "SELECT * FROM Booking WHERE bookingID = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, bookingID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Booking(
+                        resultSet.getInt("bookingID"),
+                        resultSet.getInt("userID"),
+                        resultSet.getDate("checkInDate").toLocalDate(),
+                        resultSet.getDate("checkOutDate").toLocalDate(),
+                        resultSet.getInt("numberOfGuests"),
+                        resultSet.getString("paymentStatus"),
+                        resultSet.getString("reservationStatus")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if booking not found or an error occurs
+    }
+
+    public boolean update(Booking booking) {
+        String sql = "UPDATE Booking SET checkInDate = ?, checkOutDate = ?, paymentStatus = ?, reservationStatus = ?, numberOfGuests = ? WHERE bookingID = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setDate(1, java.sql.Date.valueOf(booking.getCheckInDate()));
+            preparedStatement.setDate(2, java.sql.Date.valueOf(booking.getCheckOutDate()));
+            preparedStatement.setString(3, booking.getPaymentStatus());
+            preparedStatement.setString(4, booking.getReservationStatus());
+            preparedStatement.setInt(5, booking.getNumberOfGuests());
+            preparedStatement.setInt(6, booking.getBookingID());
+
+            return preparedStatement.executeUpdate() > 0; // Returns true if update is successful
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public List<Integer> getRoomIDsByBookingID(int bookingID) {
+        String sql = "SELECT roomID FROM BookedRooms WHERE bookingID = ?";
+        List<Integer> roomIDs = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, bookingID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                roomIDs.add(resultSet.getInt("roomID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roomIDs;
+    }
+
 
 }
