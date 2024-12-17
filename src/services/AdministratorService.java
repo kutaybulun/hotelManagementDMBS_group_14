@@ -11,6 +11,7 @@ public class AdministratorService {
     private final UserDataBaseAccess userDataBaseAccess;
     private final BookingDataBaseAccess bookingDataBaseAccess;
     private final RoomTypeDataBaseAccess roomTypeDataBaseAccess;
+    private final HotelDataBaseAccess hotelDataBaseAccess;
 
     public AdministratorService() {
         this.roomDataBaseAccess = new RoomDataBaseAccess();
@@ -18,6 +19,7 @@ public class AdministratorService {
         this.bookingDataBaseAccess = new BookingDataBaseAccess();
         this.roomTypeDataBaseAccess = new RoomTypeDataBaseAccess();
         this.employeeDataBaseAccess = new EmployeeDataBaseAccess();
+        this.hotelDataBaseAccess = new HotelDataBaseAccess();
     }
 
     public boolean addRoom(int roomTypeID, BigDecimal price, String status, int hotelID){
@@ -73,7 +75,13 @@ public class AdministratorService {
         return employeeDataBaseAccess.viewAllEmployeesWithRoles();
     }
 
-    public boolean updateEmployeeHotel(int employeeID, int hotelID){
-        return false;
+    public boolean updateEmployeeHotel(int employeeID, int hotelID) {
+        EmployeeDataBaseAccess employeeDataBaseAccess = new EmployeeDataBaseAccess();
+        return employeeDataBaseAccess.updateEmployeeHotel(employeeID, hotelID);
+    }
+
+    // View all hotels with their address information
+    public List<HotelWithAddress> viewAllHotelsWithAddress() {
+        return hotelDataBaseAccess.viewAllHotelsWithAddresses();
     }
 }

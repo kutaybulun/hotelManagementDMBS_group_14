@@ -92,7 +92,9 @@ public class Main {
             System.out.println("8. Add Room Type");
             System.out.println("9. View Room Types");
             System.out.println("10. View All Employees With Role");
-            System.out.println("11. Logout");
+            System.out.println("11. Update Employee Hotel");
+            System.out.println("12. View Hotels with Addresses");
+            System.out.println("13. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -108,8 +110,10 @@ public class Main {
                 case 7 -> viewMostBookedRoomType();
                 case 8 -> addRoomType();
                 case 9 -> viewRoomTypes();
-                case 10 -> viewAllEmployeesWithRole(); // <-- New Option for viewing employees with role
-                case 11 -> {
+                case 10 -> viewAllEmployeesWithRole();
+                case 11 -> updateEmployeeHotel();
+                case 12 -> viewAllHotelsWithAddress();
+                case 13 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -471,6 +475,32 @@ public class Main {
         }
     }
 
+    private static void viewAllHotelsWithAddress() {
+        var hotels = adminService.viewAllHotelsWithAddress();
+        if (hotels.isEmpty()) {
+            System.out.println("No hotels with addresses found.");
+        } else {
+            for (var hotel : hotels) {
+                System.out.println(hotel);
+            }
+        }
+    }
+
+    private static void updateEmployeeHotel() {
+        System.out.print("Enter Employee ID to update: ");
+        int employeeID = scanner.nextInt();
+        System.out.print("Enter new Hotel ID for the employee: ");
+        int hotelID = scanner.nextInt();
+
+        boolean success = adminService.updateEmployeeHotel(employeeID, hotelID);
+        if (success) {
+            System.out.println("Employee's hotel updated successfully!");
+        } else {
+            System.out.println("Failed to update employee's hotel. Please check the employee ID and Hotel ID and try again.");
+        }
+    }
+
+
     // --- STATIC METHODS FOR HOUSEKEEPING MENU ---
     private static void viewMyPendingTasks() {
         housekeepingService.viewMyPendingTasks().forEach(System.out::println);
@@ -486,4 +516,6 @@ public class Main {
         boolean success = housekeepingService.updateMyTaskStatus(taskID);
         System.out.println(success ? "Task updated successfully!" : "Failed to update task status. Make sure the task is assigned to you.");
     }
+
+
 }

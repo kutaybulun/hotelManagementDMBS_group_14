@@ -1,15 +1,19 @@
 package relations;
 
-public class Hotel {
+public class HotelWithAddress {
     private int hotelID;
     private String hotelName;
-    private int addressID;
+    private String street;
+    private String city;
+    private String state;
     private String contactNumber;
 
-    public Hotel(int hotelID, String hotelName, int addressID, String contactNumber) {
+    public HotelWithAddress(int hotelID, String hotelName, String street, String city, String state, String contactNumber) {
         this.hotelID = hotelID;
         this.hotelName = hotelName;
-        this.addressID = addressID;
+        this.street = street;
+        this.city = city;
+        this.state = state;
         this.contactNumber = contactNumber;
     }
 
@@ -29,12 +33,28 @@ public class Hotel {
         this.hotelName = hotelName;
     }
 
-    public int getAddressID() {
-        return addressID;
+    public String getStreet() {
+        return street;
     }
 
-    public void setAddressID(int addressID) {
-        this.addressID = addressID;
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getContactNumber() {
@@ -47,10 +67,12 @@ public class Hotel {
 
     @Override
     public String toString() {
-        return "Hotel{" +
+        return "HotelWithAddress{" +
                 "hotelID=" + hotelID +
                 ", hotelName='" + hotelName + '\'' +
-                ", addressID=" + addressID +
+                ", street='" + street + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
                 ", contactNumber='" + contactNumber + '\'' +
                 '}';
     }

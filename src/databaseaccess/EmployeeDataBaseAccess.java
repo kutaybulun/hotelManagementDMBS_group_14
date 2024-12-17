@@ -110,4 +110,22 @@ public class EmployeeDataBaseAccess {
         return employeeList;
     }
 
+    // Update an employee's hotelID
+    public boolean updateEmployeeHotel(int employeeID, int hotelID) {
+        String sql = "UPDATE Employee SET hotelID = ? WHERE employeeID = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, hotelID);
+            preparedStatement.setInt(2, employeeID);
+
+            return preparedStatement.executeUpdate() > 0; // Return true if 1 or more rows are affected
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Return false if an error occurs
+        }
+    }
+
+
 }

@@ -1,9 +1,21 @@
+-- Create Address Table
+CREATE TABLE Address (
+    addressID INT AUTO_INCREMENT PRIMARY KEY,
+    street VARCHAR(100) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    state VARCHAR(50) NOT NULL
+);
+
+-- Update Hotel Table to reference Address
 CREATE TABLE Hotel (
     hotelID INT AUTO_INCREMENT PRIMARY KEY,
     hotelName VARCHAR(50) NOT NULL,
-    location VARCHAR(50),
-    contactNumber VARCHAR(20)
+    addressID INT NOT NULL,
+    contactNumber VARCHAR(20),
+    FOREIGN KEY (addressID) REFERENCES Address(addressID)
+       ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 CREATE TABLE Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
