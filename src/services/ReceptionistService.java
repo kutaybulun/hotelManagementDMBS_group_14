@@ -12,12 +12,14 @@ public class ReceptionistService {
     private final BookingDataBaseAccess bookingDataBaseAccess;
     private final BookedRoomsDataBaseAccess bookedRoomsDataBaseAccess;
     private final HousekeepingTaskDataBaseAccess housekeepingTaskDataBaseAccess;
+    private final PaymentDataBaseAccess paymentDataBaseAccess;
     //DB access objects initialized in the constructor
     public ReceptionistService() {
         this.roomDataBaseAccess = new RoomDataBaseAccess();
         this.bookingDataBaseAccess = new BookingDataBaseAccess();
         this.bookedRoomsDataBaseAccess = new BookedRoomsDataBaseAccess();
         this.housekeepingTaskDataBaseAccess = new HousekeepingTaskDataBaseAccess();
+        this.paymentDataBaseAccess = new PaymentDataBaseAccess();
     }
 
     public boolean addNewBooking(int userID, LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests, int roomID) {
@@ -107,7 +109,32 @@ public class ReceptionistService {
         return bookingDataBaseAccess.getTotalPayment(bookingID);
     }
 
-    public void processPayment() {}
+    //payment status for a booking will be paid and related payment will be added to the payment table
+    public boolean processPayment(int bookingID) {
+        int paymentID = paymentDataBaseAccess.getNextPaymentID();
+        // 1. Calculate the total payment for the booking
+        BigDecimal totalPayment = bookingDataBaseAccess.getTotalPayment(bookingID);
+        if (totalPayment.compareTo(BigDecimal.ZERO) == 0) {
+            return false; // No payment due, so return false
+        }
+
+        // 2. Insert the payment into the Payment table
+        Payment payment = new Payment(paymentID, bookingID, totalPayment, LocalDate.now());
+        boolean isPaymentInserted = paymentDataBaseAccess.create(payment);
+
+        if (!isPaymentInserted) {
+            return false; // Return false if payment insertion failed
+        }
+
+        // 3. Update the booking's paymentStatus to 'paid'
+        boolean isBookingUpdated = bookingDataBaseAccess.updatePaymentStatus(bookingID, "paid");
+
+        if (!isBookingUpdated) {
+            return false;
+        }
+
+        return true; // Payment was successfully processed
+    }
 
 
 }

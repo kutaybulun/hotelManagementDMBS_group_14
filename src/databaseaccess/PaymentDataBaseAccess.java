@@ -43,18 +43,19 @@ public class PaymentDataBaseAccess {
 
     // Get the next available Payment ID
     public int getNextPaymentID() {
-        String sql = "SELECT MAX(paymentID) + 1 AS nextID FROM Payment";
+        String sql = "SELECT COALESCE(MAX(paymentID), 0) FROM Payment";
         try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt("nextID");
+                int maxPaymentID = resultSet.getInt(1); // Get the max bookingID (or 0 if no rows)
+                return maxPaymentID + 1; // Increment it by 1
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 1; // If no records exist, return 1
+        return 1; // Default to 1 if there are no bookings in the table
     }
 
 }

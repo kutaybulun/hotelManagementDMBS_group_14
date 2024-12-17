@@ -422,5 +422,22 @@ public class BookingDataBaseAccess {
         return BigDecimal.ZERO; // Return 0 if no payment is found
     }
 
+    public boolean updatePaymentStatus(int bookingID, String paymentStatus) {
+        String sql = "UPDATE Booking SET paymentStatus = ? WHERE bookingID = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, paymentStatus);
+            preparedStatement.setInt(2, bookingID);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            return rowsUpdated > 0; // Return true if the payment status was successfully updated
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

@@ -133,7 +133,8 @@ public class Main {
             System.out.println("7. Modify Booking (Check-In / Check-Out)");
             System.out.println("8. Delete Booking");
             System.out.println("9. View Due Payment for a Booking");
-            System.out.println("10. Logout");
+            System.out.println("10. Process Payment");
+            System.out.println("11. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -149,7 +150,8 @@ public class Main {
                 case 7 -> modifyBooking();
                 case 8 -> deleteBooking();
                 case 9 -> viewTotalPaymentForReceptionist();
-                case 10 -> {
+                case 10 -> processPayment();
+                case 11 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isReceptionistActive = false;
@@ -296,6 +298,18 @@ public class Main {
             System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
         } else {
             System.out.println("No payment found for the given booking ID.");
+        }
+    }
+
+    private static void processPayment() {
+        System.out.print("Enter Booking ID to process payment for: ");
+        int bookingID = scanner.nextInt();
+
+        boolean success = receptionistService.processPayment(bookingID);
+        if (success) {
+            System.out.println("Payment successfully processed for booking ID: " + bookingID);
+        } else {
+            System.out.println("Failed to process payment. Please check if the booking exists and is eligible for payment.");
         }
     }
 
