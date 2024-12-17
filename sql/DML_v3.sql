@@ -125,7 +125,7 @@ END $$
 
 DELIMITER ;
 --------------------- TRIGGER------------------------------------
-DELIMITER //
+DELIMITER $$
 -- insert automatically to employee if user is an employee
 CREATE TRIGGER after_user_insert
     AFTER INSERT ON Users
@@ -151,8 +151,8 @@ END IF;
 
 END IF;
 
-END;
-//
+END $$
+
 DELIMITER ;
 --------------------- TRIGGER------------------------------------
 DELIMITER $$
