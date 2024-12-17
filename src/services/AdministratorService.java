@@ -66,8 +66,6 @@ public class AdministratorService {
         return bookingDataBaseAccess.viewAllBookingRecords();
     }
 
-    public void viewAllHousekeepingRecords(){}
-
     public List<MostBookedRoomType> viewMostBookedRoomTypes() {
         return bookingDataBaseAccess.viewMostBookedRoomTypes();
     }
@@ -116,6 +114,11 @@ public class AdministratorService {
         }
 
         return reportList;
+    }
+
+    public List<HousekeeperTask> viewAllHousekeepingRecords() {
+        HousekeepingTaskDataBaseAccess housekeepingDataBaseAccess = new HousekeepingTaskDataBaseAccess();
+        return housekeepingDataBaseAccess.getAllHousekeepingRecords();
     }
 
 

@@ -191,4 +191,88 @@ public class HousekeepingTaskDataBaseAccess {
             return false;
         }
     }
+
+    public List<HousekeeperTask> getAllHousekeepingRecords() {
+        String sql = """
+        SELECT 
+            U.userID,
+            U.username AS housekeeperName,
+            HS.taskID,
+            HS.scheduledDate,
+            HS.taskStatus,
+            HS.roomID
+        FROM 
+            Users U
+            JOIN HousekeepingSchedule HS ON U.userID = HS.assignedTo
+        WHERE 
+            U.userType = 'housekeeping'
+        ORDER BY 
+            U.userID, HS.scheduledDate;
+    """;
+
+        List<HousekeeperTask> housekeepingRecords = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                HousekeeperTask record = new HousekeeperTask(
+                        resultSet.getInt("userID"),
+                        resultSet.getString("housekeeperName"),
+                        resultSet.getInt("taskID"),
+                        resultSet.getString("scheduledDate"),
+                        resultSet.getString("taskStatus"),
+                        resultSet.getInt("roomID")
+                );
+                housekeepingRecords.add(record);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return housekeepingRecords;
+    }
+
+    public List<PendingCleaningTask> viewMyCleaningSchedule() {
+        int housekeeperID = userDataBaseAccess.getCurrentUserID();
+        String sql = """
+        SELECT 
+            HS.roomID, 
+            HS.scheduledDate
+        FROM 
+            HousekeepingSchedule HS
+        WHERE 
+            HS.assignedTo = ? 
+            AND HS.taskStatus = 'pending'
+        ORDER BY 
+            HS.scheduledDate;
+    """;
+
+        List<PendingCleaningTask> schedule = new ArrayList<>();
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, housekeeperID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PendingCleaningTask task = new PendingCleaningTask(
+                        resultSet.getInt("roomID"),
+                        resultSet.getDate("scheduledDate").toString()
+                );
+                schedule.add(task);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return schedule;
+    }
+
+
+
+
+
 }

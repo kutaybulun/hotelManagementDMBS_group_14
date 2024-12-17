@@ -24,5 +24,9 @@ public class HousekeepingService {
     public boolean updateMyTaskStatus(int taskID) {
         return housekeepingTaskDataBaseAccess.updateTaskStatusToCompleted(taskID);
     }
-    public void viewMyCleaningSchedule(){}
+
+    public List<PendingCleaningTask> viewMyCleaningSchedule() {
+        return housekeepingTaskDataBaseAccess.viewMyCleaningSchedule();
+    }
+
 }

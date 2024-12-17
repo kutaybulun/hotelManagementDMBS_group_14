@@ -97,7 +97,8 @@ public class Main {
             System.out.println("11. Update Employee Hotel");
             System.out.println("12. View Hotels with Addresses");
             System.out.println("13. Generate Monthly Revenue Report");
-            System.out.println("14. Logout");
+            System.out.println("14. View All Housekeeping Records");
+            System.out.println("15. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -117,7 +118,8 @@ public class Main {
                 case 11 -> updateEmployeeHotel();
                 case 12 -> viewAllHotelsWithAddress();
                 case 13 -> generateMonthlyRevenueReport();
-                case 14 -> {
+                case 14 -> viewAllHousekeepingRecords();
+                case 15 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -208,7 +210,8 @@ public class Main {
             System.out.println("1. View My Pending Tasks");
             System.out.println("2. View My Completed Tasks");
             System.out.println("3. Update Task Status to Completed");
-            System.out.println("4. Logout");
+            System.out.println("4. View My Cleaning Schedule");
+            System.out.println("5. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -218,7 +221,8 @@ public class Main {
                 case 1 -> viewMyPendingTasks();
                 case 2 -> viewMyCompletedTasks();
                 case 3 -> updateMyTaskStatus();
-                case 4 -> {
+                case 4 -> viewMyCleaningSchedule();
+                case 5 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isHousekeepingActive = false;
@@ -546,6 +550,19 @@ public class Main {
         }
     }
 
+    private static void viewAllHousekeepingRecords() {
+        var records = adminService.viewAllHousekeepingRecords();
+        System.out.println("\n--- Housekeeping Records ---");
+        if (records.isEmpty()) {
+            System.out.println("No housekeeping records found.");
+        } else {
+            for (var record : records) {
+                System.out.println(record);
+            }
+        }
+    }
+
+
 
     // --- STATIC METHODS FOR HOUSEKEEPING MENU ---
     private static void viewMyPendingTasks() {
@@ -576,6 +593,19 @@ public class Main {
         }
         return roomIDs;
     }
+
+    private static void viewMyCleaningSchedule() {
+        var schedule = housekeepingService.viewMyCleaningSchedule();
+        System.out.println("\n--- My Cleaning Schedule ---");
+        if (schedule.isEmpty()) {
+            System.out.println("No tasks in your cleaning schedule.");
+        } else {
+            for (var task : schedule) {
+                System.out.println(task);
+            }
+        }
+    }
+
 
 
 
