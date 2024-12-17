@@ -69,4 +69,9 @@ public class GuestService {
         return totalPayment != null ? totalPayment : null; // Return null if booking does not belong to the user
     }
 
+    public boolean leaveStarRating(int bookingID, int rating) {
+        int userID = userDataBaseAccess.getCurrentUserID();
+        return bookingDataBaseAccess.leaveStarRating(bookingID, userID, rating);
+    }
+
 }

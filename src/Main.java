@@ -98,7 +98,8 @@ public class Main {
             System.out.println("12. View Hotels with Addresses");
             System.out.println("13. Generate Monthly Revenue Report");
             System.out.println("14. View All Housekeeping Records");
-            System.out.println("15. Logout");
+            System.out.println("15. View Hotel Star Ratings");
+            System.out.println("16. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -119,7 +120,8 @@ public class Main {
                 case 12 -> viewAllHotelsWithAddress();
                 case 13 -> generateMonthlyRevenueReport();
                 case 14 -> viewAllHousekeepingRecords();
-                case 15 -> {
+                case 15 -> viewHotelStarRatings();
+                case 16-> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -144,7 +146,8 @@ public class Main {
             System.out.println("8. Delete Booking");
             System.out.println("9. View Due Payment for a Booking");
             System.out.println("10. Process Payment");
-            System.out.println("11. Logout");
+            System.out.println("11. View Available Rooms");
+            System.out.println("12. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -161,7 +164,8 @@ public class Main {
                 case 8 -> deleteBooking();
                 case 9 -> viewTotalPaymentForReceptionist();
                 case 10 -> processPayment();
-                case 11 -> {
+                case 11 -> viewAvailableRooms();
+                case 12 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isReceptionistActive = false;
@@ -181,7 +185,8 @@ public class Main {
             System.out.println("3. View My Bookings");
             System.out.println("4. Cancel Booking");
             System.out.println("5. View Payment Due For a Booking");
-            System.out.println("6. Logout");
+            System.out.println("6. Leave Star Rating");
+            System.out.println("7. Logout");
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
@@ -192,8 +197,9 @@ public class Main {
                 case 2 -> viewAvailableRooms();
                 case 3 -> viewMyBookings();
                 case 4 -> cancelBooking();
-                case 5 -> viewTotalPaymentForGuest(); // New option
-                case 6 -> {
+                case 5 -> viewTotalPaymentForGuest();
+                case 6 -> leaveStarRating();
+                case 7 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isGuestActive = false;
@@ -414,6 +420,15 @@ public class Main {
         }
     }
 
+    private static void leaveStarRating() {
+        System.out.print("Enter Booking ID: ");
+        int bookingID = scanner.nextInt();
+        System.out.print("Enter Star Rating (0-5): ");
+        int rating = scanner.nextInt();
+        boolean success = guestService.leaveStarRating(bookingID, rating);
+        System.out.println(success ? "Rating submitted successfully!" : "Failed to submit rating. Enter a correct star rating and make sure this is your booking");
+    }
+
     // --- STATIC METHODS FOR ADMIN MENU ---
 
     private static void addRoom() {
@@ -562,7 +577,10 @@ public class Main {
         }
     }
 
-
+    private static void viewHotelStarRatings() {
+        var hotelStarRatings = adminService.viewStarRatingsForHotels();
+        hotelStarRatings.forEach(System.out::println);
+    }
 
     // --- STATIC METHODS FOR HOUSEKEEPING MENU ---
     private static void viewMyPendingTasks() {

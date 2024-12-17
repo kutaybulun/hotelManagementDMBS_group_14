@@ -222,3 +222,15 @@ END IF;
 END $$
 
 DELIMITER ;
+
+--------------------- TRIGGER------------------------------------
+DELIMITER $$
+
+CREATE TRIGGER after_booking_insert
+    AFTER INSERT ON Booking
+    FOR EACH ROW
+BEGIN
+    INSERT INTO StarRating (bookingID) VALUES (NEW.bookingID);
+END $$
+
+DELIMITER ;

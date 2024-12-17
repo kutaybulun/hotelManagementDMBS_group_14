@@ -438,4 +438,75 @@ public class BookingDataBaseAccess {
     }
 
 
+    // Update star rating for a specific booking
+    public boolean leaveStarRating(int bookingID, int userID, int rating) {
+        if (rating < 0 || rating > 5) {
+            return false;
+        }
+
+        String sql = """
+        UPDATE StarRating 
+        SET rating = ? 
+        WHERE bookingID = ? 
+        AND EXISTS (
+            SELECT 1 FROM Booking 
+            WHERE bookingID = ? 
+            AND userID = ? 
+            AND reservationStatus = 'checked-out'
+        );
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, rating);
+            preparedStatement.setInt(2, bookingID);
+            preparedStatement.setInt(3, bookingID);
+            preparedStatement.setInt(4, userID);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Calculate the average star rating for each hotel
+    public List<HotelStarRating> calculateHotelStarRatings() {
+        List<HotelStarRating> hotelStarRatings = new ArrayList<>();
+        String sql = """
+        SELECT H.hotelID, H.hotelName, AVG(S.rating) AS averageRating
+        FROM Hotel H
+        JOIN Room R ON H.hotelID = R.hotelID
+        JOIN BookedRooms BR ON R.roomID = BR.roomID
+        JOIN Booking B ON BR.bookingID = B.bookingID
+        JOIN StarRating S ON B.bookingID = S.bookingID
+        WHERE S.rating != -1
+        GROUP BY H.hotelID, H.hotelName;
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                HotelStarRating hotelStarRating = new HotelStarRating(
+                        resultSet.getInt("hotelID"),
+                        resultSet.getString("hotelName"),
+                        resultSet.getDouble("averageRating")
+                );
+                hotelStarRatings.add(hotelStarRating);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return hotelStarRatings;
+    }
+
+
+
+
+
 }

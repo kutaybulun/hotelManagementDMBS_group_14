@@ -121,5 +121,10 @@ public class AdministratorService {
         return housekeepingDataBaseAccess.getAllHousekeepingRecords();
     }
 
+    public List<HotelStarRating> viewStarRatingsForHotels() {
+        return bookingDataBaseAccess.calculateHotelStarRatings();
+    }
+
+
 
 }
