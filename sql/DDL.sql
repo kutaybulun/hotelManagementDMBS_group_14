@@ -1,4 +1,4 @@
--- Create Address Table
+
 CREATE TABLE Address (
     addressID INT AUTO_INCREMENT PRIMARY KEY,
     street VARCHAR(100) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE Address (
     state VARCHAR(50) NOT NULL
 );
 
--- Update Hotel Table to reference Address
+
 CREATE TABLE Hotel (
     hotelID INT AUTO_INCREMENT PRIMARY KEY,
     hotelName VARCHAR(50) NOT NULL,

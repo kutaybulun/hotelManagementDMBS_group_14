@@ -32,7 +32,7 @@ public class BookingDataBaseAccess {
         }
     }
 
-
+    // this is to delete from a booking
     public boolean delete(int bookingID) {
         String sql = "DELETE FROM Booking WHERE bookingID = ?";
         try (Connection connection = DBConnection.getConnection();
@@ -46,21 +46,7 @@ public class BookingDataBaseAccess {
         }
     }
 
-    /* public int getNextBookingID() {
-        String sql = "SELECT MAX(bookingID) + 1 AS nextID FROM Booking";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            if (resultSet.next()) {
-                return resultSet.getInt("nextID");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 1; // default to 1 if no rows exist
-    } */
-
+    // used for creating the relations class objects to hold the data, gets the next bookingID
     public int getNextBookingID() {
         String sql = "SELECT COALESCE(MAX(bookingID), 0) FROM Booking";
         try (Connection connection = DBConnection.getConnection();
@@ -123,7 +109,7 @@ public class BookingDataBaseAccess {
         return bookingRecords;
     }
 
-    // View the most booked room types
+    // View the most booked room types via a query and stores it in MostBookedRoomType
     public List<MostBookedRoomType> viewMostBookedRoomTypes() {
         String sql =
         "SELECT RT.roomTypeName, COUNT(*) AS booking_count " +
@@ -154,7 +140,7 @@ public class BookingDataBaseAccess {
         return mostBookedRoomTypes;
     }
 
-    // get user bookings
+    // used to get a Users bookings stores it in GuestBooking class
     public List<GuestBooking> getUserBookings(int userID) {
         String sql = "SELECT " +
                 "    B.bookingID, " +
@@ -201,7 +187,7 @@ public class BookingDataBaseAccess {
         return guestBookings;
     }
 
-    // Method to retrieve requested bookings
+    // Method to retrieve requested bookings and to store it in RequestedBooking class
     public List<RequestedBooking> getRequestedBookings() {
         String sql = """
             SELECT 
@@ -280,7 +266,7 @@ public class BookingDataBaseAccess {
 
         return checkedOutBookings;
     }
-
+    //this is to set a booking the cancelled if it is unpaid and pending
     public boolean cancelBooking(int bookingID, int userID) {
         String sql = "UPDATE Booking SET reservationStatus = 'cancelled' WHERE bookingID = ? AND userID = ? AND reservationStatus = 'pending' AND paymentStatus = 'pending'";
         try (Connection connection = DBConnection.getConnection();

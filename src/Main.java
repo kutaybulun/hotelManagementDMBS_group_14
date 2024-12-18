@@ -22,10 +22,9 @@ public class Main {
             System.out.println("1. Sign Up");
             System.out.println("2. Log In");
             System.out.println("3. Exit");
-            System.out.print("Enter your choice (1,2,3): ");
+            System.out.print("Enter your choice (1, 2, 3): ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            int choice = getValidIntInput(); // Use the universal method to get valid input
 
             switch (choice) {
                 case 1 -> signUp();
@@ -41,24 +40,26 @@ public class Main {
     // signUp(): Allows new users to register with an username, password, user type (except admin) and contact details.
     private static void signUp() {
         System.out.println("\n--- Sign Up ---");
+
         System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = getValidStringInput();
+
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String password = getValidStringInput();
 
         String userType;
         while (true) {
             System.out.print("Enter user type (guest, receptionist, housekeeping): ");
-            userType = scanner.nextLine().trim().toLowerCase();
-            if (!userType.equals("administrator")) {
+            userType = getValidStringInput().toLowerCase();
+            if (!userType.equals("administrator") && (userType.equals("guest") || userType.equals("receptionist") || userType.equals("housekeeping"))) {
                 break; // Valid user type, exit loop
             } else {
-                System.out.println("Error: You cannot create an administrator account via sign-up.");
+                System.out.println("Error: Invalid user type. You cannot create an administrator account via sign-up.");
             }
         }
 
         System.out.print("Enter contact details (email or phone): ");
-        String contactDetails = scanner.nextLine();
+        String contactDetails = getValidStringInput();
 
         boolean success = userService.signUp(username, password, userType, contactDetails);
         System.out.println(success ? "Sign-up successful! You can now log in." : "Sign-up failed. Please try again.");
@@ -67,10 +68,12 @@ public class Main {
     // logIn(): Authenticates the user and directs them to the relevant menu for their role.
     private static void logIn() {
         System.out.println("\n--- Log In ---");
+
         System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = getValidStringInput();
+
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        String password = getValidStringInput();
 
         var loggedInUser = userService.logIn(username, password);
 
@@ -89,6 +92,7 @@ public class Main {
             System.out.println("Invalid login credentials. Please try again.");
         }
     }
+
 
     // adminMenu(): Provides administrative options.
     private static void adminMenu() {
@@ -115,8 +119,7 @@ public class Main {
             System.out.println("18. Logout");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            int choice = getValidIntInput();
 
             switch (choice) {
                 case 1 -> addRoom();
@@ -136,7 +139,7 @@ public class Main {
                 case 15 -> viewHotelStarRatings();
                 case 16 -> createHotel();
                 case 17 -> manageRoomStatus();
-                case 18-> {
+                case 18 -> {
                     System.out.println("Logging out...");
                     userService.logOut();
                     isAdminActive = false;
@@ -165,8 +168,7 @@ public class Main {
             System.out.println("12. Logout");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            int choice = getValidIntInput();
 
             switch (choice) {
                 case 1 -> viewRequestedBookings();
@@ -204,8 +206,7 @@ public class Main {
             System.out.println("7. Logout");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = getValidIntInput();
 
             switch (choice) {
                 case 1 -> addNewBooking();
@@ -223,6 +224,7 @@ public class Main {
             }
         }
     }
+
     // housekeepingMenu(): Presents housekeeping with options to view pending/completed tasks, update task status and view their cleaning schedules.
     private static void housekeepingMenu() {
         boolean isHousekeepingActive = true;
@@ -235,8 +237,7 @@ public class Main {
             System.out.println("5. Logout");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = getValidIntInput();
 
             switch (choice) {
                 case 1 -> viewMyPendingTasks();
@@ -252,6 +253,7 @@ public class Main {
             }
         }
     }
+
 
     //STATIC METHODS FOR RECEPTIONIST MENU
     // viewRequestedBookings(): Lists bookings that have been requested but not yet confirmed.
@@ -297,21 +299,24 @@ public class Main {
     // addNewBookingByReceptionist(): Allows the receptionist to add a booking on behalf of a guest.
     private static void addNewBookingByReceptionist() {
         System.out.print("Enter User ID: ");
-        int userID = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int userID = getValidIntInput();
 
-        System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
-        LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+        System.out.println("Enter Check-In Date (YYYY-MM-DD): ");
+        LocalDate checkInDate = getValidDateInput();
 
-        System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
-        LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+        System.out.println("Enter Check-Out Date (YYYY-MM-DD): ");
+        LocalDate checkOutDate = getValidDateInput();
+
+        if (!checkOutDate.isAfter(checkInDate)) {
+            System.out.println("Check-Out date must be after Check-In date. Please try again.");
+            return; // Exit the method early
+        }
 
         System.out.print("Enter number of guests: ");
-        int numberOfGuests = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int numberOfGuests = getValidIntInput();
 
         System.out.print("Enter Room IDs (comma-separated, e.g., 1,2,3): ");
-        String roomIDsInput = scanner.nextLine();
+        String roomIDsInput = getValidStringInput();
         List<Integer> roomIDs = parseRoomIDs(roomIDsInput);
 
         boolean success = receptionistService.addNewBooking(userID, checkInDate, checkOutDate, numberOfGuests, roomIDs);
@@ -320,18 +325,22 @@ public class Main {
     // assignHousekeepingTask(): Assigns a housekeeping task to a specific housekeeper and updates room status.
     private static void assignHousekeepingTask() {
         System.out.print("Enter Room ID: ");
-        int roomID = scanner.nextInt();
+        int roomID = getValidIntInput();
+
         System.out.print("Enter User ID of Housekeeper: ");
-        int userID = scanner.nextInt();
-        System.out.print("Enter Scheduled Date (YYYY-MM-DD): ");
-        LocalDate date = LocalDate.parse(scanner.next());
+        int userID = getValidIntInput();
+
+        System.out.println("Enter Scheduled Date (YYYY-MM-DD): ");
+        LocalDate date = getValidDateInput();
+
         boolean success = receptionistService.assignHouseKeepingTask(roomID, userID, date, "pending");
         System.out.println(success ? "Task assigned successfully!" : "Failed to assign task.");
     }
     // deleteBooking(): Deletes a booking if it is cancelled.
     private static void deleteBooking() {
         System.out.print("Enter Booking ID to delete: ");
-        int bookingID = scanner.nextInt();
+        int bookingID = getValidIntInput();
+
         boolean success = receptionistService.deleteBooking(bookingID);
         System.out.println(success ? "Booking deleted successfully!" :
                 "Error: Only cancelled bookings can be deleted.");
@@ -339,10 +348,19 @@ public class Main {
     // modifyBooking(): Checks in or checks out a booking based on payment and status of them.
     private static void modifyBooking() {
         System.out.print("Enter Booking ID: ");
-        int bookingID = scanner.nextInt();
-        scanner.nextLine();
+        int bookingID = getValidIntInput();
+
         System.out.print("Choose action (check-in / check-out): ");
-        String action = scanner.nextLine().trim().toLowerCase();
+        String action;
+        while (true) {
+            action = getValidStringInput().trim().toLowerCase();
+            if (action.equals("check-in") || action.equals("check-out")) {
+                break;
+            } else {
+                System.out.print("Invalid action. Please enter 'check-in' or 'check-out': ");
+            }
+        }
+
         boolean success = receptionistService.modifyBooking(bookingID, action);
         if (success) {
             System.out.println("Booking updated successfully for action: " + action);
@@ -351,28 +369,26 @@ public class Main {
                 System.out.println("Error: Booking must be pending to check-in.");
             } else if ("check-out".equals(action)) {
                 System.out.println("Error: Payment must be completed before check-out.");
-            } else {
-                System.out.println("Invalid action. Please enter 'check-in' or 'check-out'.");
             }
         }
     }
     // viewTotalPaymentForReceptionist(): Shows the total payment due for a specific booking.
     private static void viewTotalPaymentForReceptionist() {
         System.out.print("Enter Booking ID to view payment: ");
-        int bookingID = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int bookingID = getValidIntInput();
 
         BigDecimal totalPayment = receptionistService.getTotalPayment(bookingID);
-        if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
+        if (totalPayment != null && totalPayment.compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
         } else {
-            System.out.println("No payment have been found for the given booking ID.");
+            System.out.println("No payment has been found for the given booking ID.");
         }
     }
+
     // processPayment(): Processes the payment for a booking if it is eligible.
     private static void processPayment() {
         System.out.print("Enter Booking ID to process payment for: ");
-        int bookingID = scanner.nextInt();
+        int bookingID = getValidIntInput();
 
         boolean success = receptionistService.processPayment(bookingID);
         if (success) {
@@ -386,17 +402,21 @@ public class Main {
     // addNewBooking(): Allows a guest to add a new booking for specified dates and rooms.
     private static void addNewBooking() {
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
-        LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+        LocalDate checkInDate = getValidDateInput();
 
         System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
-        LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+        LocalDate checkOutDate = getValidDateInput();
+
+        if (!checkOutDate.isAfter(checkInDate)) {
+            System.out.println("Check-Out date must be after Check-In date. Please try again.");
+            return;
+        }
 
         System.out.print("Enter number of guests: ");
-        int numberOfGuests = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int numberOfGuests = getValidIntInput();
 
         System.out.print("Enter Room IDs (comma-separated, e.g., 1,2,3): ");
-        String roomIDsInput = scanner.nextLine();
+        String roomIDsInput = getValidStringInput();
         List<Integer> roomIDs = parseRoomIDs(roomIDsInput);
 
         boolean success = guestService.addNewBooking(checkInDate, checkOutDate, numberOfGuests, roomIDs);
@@ -404,30 +424,25 @@ public class Main {
     }
     // viewAvailableRooms(): Shows all rooms available in a given date range.
     private static void viewAvailableRooms() {
-        try {
-            System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
-            LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
+        LocalDate checkInDate = getValidDateInput();
 
-            System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
-            LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+        System.out.print("Enter Check-Out Date (YYYY-MM-DD): ");
+        LocalDate checkOutDate = getValidDateInput();
 
-            // Ensure check-out date is after check-in date
-            if (!checkOutDate.isAfter(checkInDate)) {
-                System.out.println("Check-Out date must be after Check-In date. Please try again.");
-                return; // Exit the method early
-            }
+        // Ensure check-out date is after check-in date
+        if (!checkOutDate.isAfter(checkInDate)) {
+            System.out.println("Check-Out date must be after Check-In date. Please try again.");
+            return; // Exit the method early
+        }
 
-            var rooms = guestService.viewAvailableRooms(checkInDate, checkOutDate);
+        var rooms = guestService.viewAvailableRooms(checkInDate, checkOutDate);
 
-            if (rooms.isEmpty()) {
-                System.out.println("There are no available rooms for the specified dates.");
-            } else {
-                System.out.println("\n--- Available Rooms ---");
-                rooms.forEach(System.out::println);
-            }
-
-        } catch (Exception e) {
-            System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+        if (rooms.isEmpty()) {
+            System.out.println("There are no available rooms for the specified dates.");
+        } else {
+            System.out.println("\n--- Available Rooms ---");
+            rooms.forEach(System.out::println);
         }
     }
     // viewMyBookings(): Shows all the bookings that belong to the current guest.
@@ -445,19 +460,19 @@ public class Main {
     // cancelBooking(): Cancels a pending and unpaid booking for the current guest.
     private static void cancelBooking() {
         System.out.print("Enter Booking ID to cancel: ");
-        int bookingID = scanner.nextInt();
+        int bookingID = getValidIntInput();
         boolean success = guestService.cancelBooking(bookingID);
         if (success) {
             System.out.println("Booking canceled successfully!");
         } else {
-            System.out.println("Failed to cancel booking. Ensure that it is your booking, pending and unpaid.");
+            System.out.println("Failed to cancel booking. Ensure that it is your booking, pending, and unpaid.");
         }
     }
+
     // viewTotalPaymentForGuest(): Shows the total payment due for a guest’s own booking.
     private static void viewTotalPaymentForGuest() {
         System.out.print("Enter Booking ID to view payment: ");
-        int bookingID = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int bookingID = getValidIntInput();
 
         BigDecimal totalPayment = guestService.getTotalPayment(bookingID);
         if (totalPayment == null) {
@@ -465,31 +480,49 @@ public class Main {
         } else if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
         } else {
-            System.out.println("No payment have been found for the given booking ID.");
+            System.out.println("No payment has been found for the given booking ID.");
         }
     }
     // leaveStarRating(): Lets a guest leave a star rating for a booking.
     private static void leaveStarRating() {
         System.out.print("Enter Booking ID: ");
-        int bookingID = scanner.nextInt();
+        int bookingID = getValidIntInput();
+
         System.out.print("Enter Star Rating (0-5): ");
-        int rating = scanner.nextInt();
+        int rating = getValidIntInput();
+
+        if (rating < 0 || rating > 5) {
+            System.out.println("Invalid rating. Please enter a star rating between 0 and 5.");
+            return;
+        }
+
         boolean success = guestService.leaveStarRating(bookingID, rating);
-        System.out.println(success ? "Rating submitted successfully!" : "Failed to submit rating. Enter a correct star rating and make sure this is your booking");
+        System.out.println(success ? "Rating submitted successfully!" : "Failed to submit rating. Enter a correct star rating and make sure this is your booking.");
     }
 
     //STATIC METHODS FOR ADMIN MENU
     // addRoom(): Adds a new room with a specified type, price, status and hotel ID.
     private static void addRoom() {
         System.out.print("Enter Room Type ID: ");
-        int roomTypeID = scanner.nextInt();
+        int roomTypeID = getValidIntInput();
+
         System.out.print("Enter Price: ");
-        BigDecimal price = scanner.nextBigDecimal();
-        scanner.nextLine();
-        System.out.print("Enter Status: ");
-        String status = scanner.nextLine();
+        BigDecimal price = getValidBigDecimalInput();
+
+        System.out.print("Enter Status (available, booked, cleaning): ");
+        String status;
+        while (true) {
+            status = getValidStringInput().toLowerCase();
+            if (status.equals("available") || status.equals("booked") || status.equals("cleaning")) {
+                break;
+            } else {
+                System.out.print("Invalid status. Please enter 'available', 'booked', or 'cleaning': ");
+            }
+        }
+
         System.out.print("Enter Hotel ID: ");
-        int hotelID = scanner.nextInt();
+        int hotelID = getValidIntInput();
+
         boolean success = adminService.addRoom(roomTypeID, price, status, hotelID);
         System.out.println(success ? "Room added successfully!" : "Failed to add room.");
     }
@@ -497,27 +530,42 @@ public class Main {
     // deleteRoom(): Deletes an existing room if it is not currently booked.
     private static void deleteRoom() {
         System.out.print("Enter Room ID to delete: ");
-        int roomID = scanner.nextInt();
+        int roomID = getValidIntInput();
+
         boolean success = adminService.deleteRoom(roomID);
         System.out.println(success ? "Room deleted successfully!" : "Failed to delete room.");
     }
+
     // addUserAccount(): Creates a new user account of the specified type with the given information.
     private static void addUserAccount() {
         System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = getValidStringInput();
+
         System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-        System.out.print("Enter user type (guest, administrator, receptionist, housekeeping): ");
-        String userType = scanner.nextLine();
+        String password = getValidStringInput();
+
+        String userType;
+        while (true) {
+            System.out.print("Enter user type (guest, receptionist, housekeeping): ");
+            userType = getValidStringInput().toLowerCase();
+            if (userType.equals("guest") || userType.equals("receptionist") || userType.equals("housekeeping")) {
+                break;
+            } else {
+                System.out.println("Invalid user type. Please enter one of the following: guest, receptionist, housekeeping.");
+            }
+        }
+
         System.out.print("Enter contact details (email or phone): ");
-        String contactDetails = scanner.nextLine();
+        String contactDetails = getValidStringInput();
+
         boolean success = adminService.addUserAccount(username, password, userType, contactDetails);
         System.out.println(success ? "User account created successfully!" : "Failed to create user account.");
     }
     // removeUserAccount(): Removes an user account based on the provided user ID.
     private static void removeUserAccount() {
         System.out.print("Enter User ID to delete: ");
-        int userID = scanner.nextInt();
+        int userID = getValidIntInput();
+
         boolean success = adminService.removeUserAccount(userID);
         System.out.println(success ? "User account deleted successfully!" : "Failed to delete user account.");
     }
@@ -539,7 +587,8 @@ public class Main {
     // addRoomType(): Adds a new room type to the system.
     private static void addRoomType() {
         System.out.print("Enter Room Type Name: ");
-        String roomTypeName = scanner.nextLine();
+        String roomTypeName = getValidStringInput();
+
         boolean success = adminService.addRoomType(roomTypeName);
         System.out.println(success ? "Room type added successfully!" : "Failed to add room type.");
     }
@@ -577,9 +626,10 @@ public class Main {
     // updateEmployeeHotel(): Updates the hotel assignment for an employee.
     private static void updateEmployeeHotel() {
         System.out.print("Enter Employee ID to update: ");
-        int employeeID = scanner.nextInt();
+        int employeeID = getValidIntInput();
+
         System.out.print("Enter new Hotel ID for the employee: ");
-        int hotelID = scanner.nextInt();
+        int hotelID = getValidIntInput();
 
         boolean success = adminService.updateEmployeeHotel(employeeID, hotelID);
         if (success) {
@@ -593,10 +643,10 @@ public class Main {
         System.out.println("\n--- Generate Monthly Revenue Report ---");
 
         System.out.print("Enter Year (YYYY): ");
-        int year = scanner.nextInt();
+        int year = getValidIntInput();
 
         System.out.print("Enter Month (1-12): ");
-        int month = scanner.nextInt();
+        int month = getValidIntInput();
 
         if (month < 1 || month > 12) {
             System.out.println("Invalid month. Please enter a value between 1 and 12.");
@@ -638,15 +688,20 @@ public class Main {
     // createHotel(): Creates a new hotel by first creating an address and then the hotel record.
     private static void createHotel() {
         System.out.print("Enter Hotel Name: ");
-        String hotelName = scanner.nextLine();
+        String hotelName = getValidStringInput();
+
         System.out.print("Enter Street: ");
-        String street = scanner.nextLine();
+        String street = getValidStringInput();
+
         System.out.print("Enter City: ");
-        String city = scanner.nextLine();
+        String city = getValidStringInput();
+
         System.out.print("Enter State: ");
-        String state = scanner.nextLine();
+        String state = getValidStringInput();
+
         System.out.print("Enter Contact Number: ");
-        String contactNumber = scanner.nextLine();
+        String contactNumber = getValidStringInput();
+
         boolean success = adminService.createHotel(hotelName, street, city, state, contactNumber);
 
         if (success) {
@@ -658,11 +713,10 @@ public class Main {
     // manageRoomStatus(): Updates the room type of a specified room to a new type.
     private static void manageRoomStatus() {
         System.out.print("Enter Room ID to update: ");
-        int roomID = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
+        int roomID = getValidIntInput();
 
         System.out.print("Enter New Room Type ID: ");
-        int newRoomTypeID = scanner.nextInt();
+        int newRoomTypeID = getValidIntInput();
 
         boolean success = adminService.updateRoomType(roomID, newRoomTypeID);
         System.out.println(success ? "Room type updated successfully!" : "Failed to update room type. Please check all of the details and try again.");
@@ -695,7 +749,8 @@ public class Main {
     // updateMyTaskStatus(): Updates a housekeeping task to completed if it belongs to the logged-in housekeeper.
     private static void updateMyTaskStatus() {
         System.out.print("Enter Task ID to mark as completed: ");
-        int taskID = scanner.nextInt();
+        int taskID = getValidIntInput();
+
         boolean success = housekeepingService.updateMyTaskStatus(taskID);
         System.out.println(success ? "Task updated successfully!" : "Failed to update task status. Make sure the task is assigned to you.");
     }
@@ -721,6 +776,55 @@ public class Main {
         } else {
             for (var task : schedule) {
                 System.out.println(task);
+            }
+        }
+    }
+
+    // Error handling method to get valid integer input from user
+    private static int getValidIntInput() {
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a valid number: ");
+            }
+        }
+    }
+
+    // Error handling method to get a valid BigDecimal input from the user
+    private static BigDecimal getValidBigDecimalInput() {
+        while (true) {
+            try {
+                String input = scanner.nextLine().trim();
+                return new BigDecimal(input);
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a valid decimal number: ");
+            }
+        }
+    }
+
+    // Error handling to get a valid LocalDate input from the user
+    private static LocalDate getValidDateInput() {
+        while (true) {
+            try {
+                System.out.print("Enter date (YYYY-MM-DD): ");
+                String input = scanner.nextLine().trim();
+                return LocalDate.parse(input);
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+            }
+        }
+    }
+
+    // Error handling to get a valid string input from the user
+    private static String getValidStringInput() {
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            } else {
+                System.out.print("Input cannot be empty. Please try again: ");
             }
         }
     }

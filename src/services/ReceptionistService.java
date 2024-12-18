@@ -71,7 +71,8 @@ public class ReceptionistService {
 
     private boolean checkInBooking(int bookingID) {
         Booking booking = bookingDataBaseAccess.getBookingByID(bookingID);
-        if (booking != null && "pending".equals(booking.getReservationStatus())) {
+        if (booking != null &&
+                ("pending".equals(booking.getReservationStatus()) || "confirmed".equals(booking.getReservationStatus()))) {
             booking.setReservationStatus("checked-in");
             return bookingDataBaseAccess.update(booking);
         }
