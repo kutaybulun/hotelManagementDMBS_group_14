@@ -22,7 +22,7 @@ public class Main {
             System.out.println("1. Sign Up");
             System.out.println("2. Log In");
             System.out.println("3. Exit");
-            System.out.print("Enter your choice: ");
+            System.out.print("Enter your choice (1,2,3): ");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Clear the buffer
@@ -38,7 +38,7 @@ public class Main {
             }
         }
     }
-
+    // signUp(): Allows new users to register with an username, password, user type (except admin) and contact details.
     private static void signUp() {
         System.out.println("\n--- Sign Up ---");
         System.out.print("Enter username: ");
@@ -64,7 +64,7 @@ public class Main {
         System.out.println(success ? "Sign-up successful! You can now log in." : "Sign-up failed. Please try again.");
     }
 
-
+    // logIn(): Authenticates the user and directs them to the relevant menu for their role.
     private static void logIn() {
         System.out.println("\n--- Log In ---");
         System.out.print("Enter username: ");
@@ -90,7 +90,7 @@ public class Main {
         }
     }
 
-    // --- ADMINISTRATOR MENU ---
+    // adminMenu(): Provides administrative options.
     private static void adminMenu() {
         boolean isAdminActive = true;
         while (isAdminActive) {
@@ -146,7 +146,7 @@ public class Main {
         }
     }
 
-    // --- RECEPTIONIST MENU ---
+    // receptionistMenu(): Offers receptionist functionalities such as viewing requested bookings, assigning tasks and modifying bookings.
     private static void receptionistMenu() {
         boolean isReceptionistActive = true;
         while (isReceptionistActive) {
@@ -190,7 +190,7 @@ public class Main {
         }
     }
 
-    // --- GUEST MENU ---
+    // guestMenu(): Lets guests add bookings, view available rooms, view/cancel their bookings and leave star ratings.
     private static void guestMenu() {
         boolean isGuestActive = true;
         while (isGuestActive) {
@@ -205,7 +205,7 @@ public class Main {
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> addNewBooking();
@@ -223,7 +223,7 @@ public class Main {
             }
         }
     }
-    //--- HOUSEKEEPING MENU ---
+    // housekeepingMenu(): Presents housekeeping with options to view pending/completed tasks, update task status and view their cleaning schedules.
     private static void housekeepingMenu() {
         boolean isHousekeepingActive = true;
         while (isHousekeepingActive) {
@@ -236,7 +236,7 @@ public class Main {
             System.out.print("Enter your choice: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Clear the buffer
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> viewMyPendingTasks();
@@ -253,28 +253,48 @@ public class Main {
         }
     }
 
-    // --- STATIC METHODS FOR RECEPTIONIST MENU ---
+    //STATIC METHODS FOR RECEPTIONIST MENU
+    // viewRequestedBookings(): Lists bookings that have been requested but not yet confirmed.
     private static void viewRequestedBookings() {
-        receptionistService.viewRequestedBookings().forEach(System.out::println);
-    }
-
-    private static void viewRoomsToBeCleaned() {
-        List<Integer> roomIDs = receptionistService.viewRoomsToBeCleaned();
-        if (roomIDs.isEmpty()) {
-            System.out.println("No rooms currently marked for cleaning.");
-        } else {
-            roomIDs.forEach(roomID -> System.out.println("Room ID: " + roomID));
+        var requestedBookings = receptionistService.viewRequestedBookings();
+        System.out.println("\n--- Requested Bookings ---");
+        if (requestedBookings.isEmpty()) {
+            System.out.println("There are no requested bookings.");
+            return;
+        }
+        for (var booking : requestedBookings) {
+            System.out.println(booking);
         }
     }
-
+    // viewRoomsToBeCleaned(): Shows rooms currently marked for cleaning.
+    private static void viewRoomsToBeCleaned() {
+        var roomIDs = receptionistService.viewRoomsToBeCleaned();
+        System.out.println("\n--- Rooms to be Cleaned ---");
+        if (roomIDs.isEmpty()) {
+            System.out.println("There is no room currently marked for cleaning.");
+            return;
+        }
+        for (var roomID : roomIDs) {
+            System.out.println("Room ID: " + roomID);
+        }
+    }
+    // viewHousekeepersAndAvailability(): Displays housekeepers and their current task assignments.
     private static void viewHousekeepersAndAvailability() {
         receptionistService.viewAllHouseKeepersRecordsAndAvailability().forEach(System.out::println);
     }
-
+    // viewAllBookings(): Shows all of the bookings in the system.
     private static void viewAllBookings() {
-        receptionistService.viewAllBookings().forEach(System.out::println);
+        var bookings = receptionistService.viewAllBookings();
+        System.out.println("\n--- All Bookings ---");
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings found.");
+            return;
+        }
+        for (var booking : bookings) {
+            System.out.println(booking);
+        }
     }
-
+    // addNewBookingByReceptionist(): Allows the receptionist to add a booking on behalf of a guest.
     private static void addNewBookingByReceptionist() {
         System.out.print("Enter User ID: ");
         int userID = scanner.nextInt();
@@ -297,7 +317,7 @@ public class Main {
         boolean success = receptionistService.addNewBooking(userID, checkInDate, checkOutDate, numberOfGuests, roomIDs);
         System.out.println(success ? "Booking added successfully!" : "Failed to add booking.");
     }
-
+    // assignHousekeepingTask(): Assigns a housekeeping task to a specific housekeeper and updates room status.
     private static void assignHousekeepingTask() {
         System.out.print("Enter Room ID: ");
         int roomID = scanner.nextInt();
@@ -308,6 +328,7 @@ public class Main {
         boolean success = receptionistService.assignHouseKeepingTask(roomID, userID, date, "pending");
         System.out.println(success ? "Task assigned successfully!" : "Failed to assign task.");
     }
+    // deleteBooking(): Deletes a booking if it is cancelled.
     private static void deleteBooking() {
         System.out.print("Enter Booking ID to delete: ");
         int bookingID = scanner.nextInt();
@@ -315,7 +336,7 @@ public class Main {
         System.out.println(success ? "Booking deleted successfully!" :
                 "Error: Only cancelled bookings can be deleted.");
     }
-
+    // modifyBooking(): Checks in or checks out a booking based on payment and status of them.
     private static void modifyBooking() {
         System.out.print("Enter Booking ID: ");
         int bookingID = scanner.nextInt();
@@ -335,7 +356,7 @@ public class Main {
             }
         }
     }
-
+    // viewTotalPaymentForReceptionist(): Shows the total payment due for a specific booking.
     private static void viewTotalPaymentForReceptionist() {
         System.out.print("Enter Booking ID to view payment: ");
         int bookingID = scanner.nextInt();
@@ -345,10 +366,10 @@ public class Main {
         if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
         } else {
-            System.out.println("No payment found for the given booking ID.");
+            System.out.println("No payment have been found for the given booking ID.");
         }
     }
-
+    // processPayment(): Processes the payment for a booking if it is eligible.
     private static void processPayment() {
         System.out.print("Enter Booking ID to process payment for: ");
         int bookingID = scanner.nextInt();
@@ -361,7 +382,8 @@ public class Main {
         }
     }
 
-    // --- STATIC METHODS FOR GUEST MENU ---
+    //STATIC METHODS FOR GUEST MENU
+    // addNewBooking(): Allows a guest to add a new booking for specified dates and rooms.
     private static void addNewBooking() {
         System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
         LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
@@ -380,7 +402,7 @@ public class Main {
         boolean success = guestService.addNewBooking(checkInDate, checkOutDate, numberOfGuests, roomIDs);
         System.out.println(success ? "Booking added successfully!" : "Failed to add booking.");
     }
-
+    // viewAvailableRooms(): Shows all rooms available in a given date range.
     private static void viewAvailableRooms() {
         try {
             System.out.print("Enter Check-In Date (YYYY-MM-DD): ");
@@ -398,7 +420,7 @@ public class Main {
             var rooms = guestService.viewAvailableRooms(checkInDate, checkOutDate);
 
             if (rooms.isEmpty()) {
-                System.out.println("No available rooms for the specified dates.");
+                System.out.println("There are no available rooms for the specified dates.");
             } else {
                 System.out.println("\n--- Available Rooms ---");
                 rooms.forEach(System.out::println);
@@ -408,12 +430,19 @@ public class Main {
             System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
         }
     }
-
+    // viewMyBookings(): Shows all the bookings that belong to the current guest.
     private static void viewMyBookings() {
         var bookings = guestService.viewMyBookings();
-        bookings.forEach(System.out::println);
+        System.out.println("\n--- My Bookings ---");
+        if (bookings.isEmpty()) {
+            System.out.println("There are no bookings found.");
+        } else {
+            for (var booking : bookings) {
+                System.out.println(booking);
+            }
+        }
     }
-
+    // cancelBooking(): Cancels a pending and unpaid booking for the current guest.
     private static void cancelBooking() {
         System.out.print("Enter Booking ID to cancel: ");
         int bookingID = scanner.nextInt();
@@ -421,10 +450,10 @@ public class Main {
         if (success) {
             System.out.println("Booking canceled successfully!");
         } else {
-            System.out.println("Failed to cancel booking. Ensure it is your booking, pending, and unpaid.");
+            System.out.println("Failed to cancel booking. Ensure that it is your booking, pending and unpaid.");
         }
     }
-
+    // viewTotalPaymentForGuest(): Shows the total payment due for a guest’s own booking.
     private static void viewTotalPaymentForGuest() {
         System.out.print("Enter Booking ID to view payment: ");
         int bookingID = scanner.nextInt();
@@ -436,10 +465,10 @@ public class Main {
         } else if (totalPayment.compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Total payment for booking ID " + bookingID + " is: $" + totalPayment);
         } else {
-            System.out.println("No payment found for the given booking ID.");
+            System.out.println("No payment have been found for the given booking ID.");
         }
     }
-
+    // leaveStarRating(): Lets a guest leave a star rating for a booking.
     private static void leaveStarRating() {
         System.out.print("Enter Booking ID: ");
         int bookingID = scanner.nextInt();
@@ -449,38 +478,8 @@ public class Main {
         System.out.println(success ? "Rating submitted successfully!" : "Failed to submit rating. Enter a correct star rating and make sure this is your booking");
     }
 
-    // --- STATIC METHODS FOR ADMIN MENU ---
-    private static void createHotel() {
-        System.out.print("Enter Hotel Name: ");
-        String hotelName = scanner.nextLine();
-        System.out.print("Enter Street: ");
-        String street = scanner.nextLine();
-        System.out.print("Enter City: ");
-        String city = scanner.nextLine();
-        System.out.print("Enter State: ");
-        String state = scanner.nextLine();
-        System.out.print("Enter Contact Number: ");
-        String contactNumber = scanner.nextLine();
-        boolean success = adminService.createHotel(hotelName, street, city, state, contactNumber);
-
-        if (success) {
-            System.out.println("Hotel created successfully!");
-        } else {
-            System.out.println("Error: Failed to create hotel. Please check all inputs and try again.");
-        }
-    }
-    private static void manageRoomStatus() {
-        System.out.print("Enter Room ID to update: ");
-        int roomID = scanner.nextInt();
-        scanner.nextLine(); // Clear the buffer
-
-        System.out.print("Enter New Room Type ID: ");
-        int newRoomTypeID = scanner.nextInt();
-
-        boolean success = adminService.updateRoomType(roomID, newRoomTypeID);
-        System.out.println(success ? "Room type updated successfully!" : "Error: Failed to update room type. Please check the details and try again.");
-    }
-
+    //STATIC METHODS FOR ADMIN MENU
+    // addRoom(): Adds a new room with a specified type, price, status and hotel ID.
     private static void addRoom() {
         System.out.print("Enter Room Type ID: ");
         int roomTypeID = scanner.nextInt();
@@ -495,13 +494,14 @@ public class Main {
         System.out.println(success ? "Room added successfully!" : "Failed to add room.");
     }
 
+    // deleteRoom(): Deletes an existing room if it is not currently booked.
     private static void deleteRoom() {
         System.out.print("Enter Room ID to delete: ");
         int roomID = scanner.nextInt();
         boolean success = adminService.deleteRoom(roomID);
         System.out.println(success ? "Room deleted successfully!" : "Failed to delete room.");
     }
-
+    // addUserAccount(): Creates a new user account of the specified type with the given information.
     private static void addUserAccount() {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
@@ -514,67 +514,67 @@ public class Main {
         boolean success = adminService.addUserAccount(username, password, userType, contactDetails);
         System.out.println(success ? "User account created successfully!" : "Failed to create user account.");
     }
-
+    // removeUserAccount(): Removes an user account based on the provided user ID.
     private static void removeUserAccount() {
         System.out.print("Enter User ID to delete: ");
         int userID = scanner.nextInt();
         boolean success = adminService.removeUserAccount(userID);
         System.out.println(success ? "User account deleted successfully!" : "Failed to delete user account.");
     }
-
+    // viewUserAccounts(): Displays all of the existing user accounts.
     private static void viewUserAccounts() {
         var users = adminService.viewUserAccounts();
         users.forEach(System.out::println);
     }
-
+    // viewAllBookingRecords(): Shows all of the booking records in the system.
     private static void viewAllBookingRecords() {
         var bookingRecords = adminService.viewAllBookingRecords();
         bookingRecords.forEach(System.out::println);
     }
-
+    // viewMostBookedRoomType(): Retrieves and shows the room type with most frequent bookings.
     private static void viewMostBookedRoomType() {
         var mostBookedRoomTypes = adminService.viewMostBookedRoomTypes();
         mostBookedRoomTypes.forEach(System.out::println);
     }
-
+    // addRoomType(): Adds a new room type to the system.
     private static void addRoomType() {
         System.out.print("Enter Room Type Name: ");
         String roomTypeName = scanner.nextLine();
         boolean success = adminService.addRoomType(roomTypeName);
         System.out.println(success ? "Room type added successfully!" : "Failed to add room type.");
     }
-
+    // viewRoomTypes(): Lists all available room types.
     private static void viewRoomTypes() {
         System.out.println("\n--- View Room Types ---");
         var roomTypes = adminService.viewRoomTypes();
         if (roomTypes.isEmpty()) {
-            System.out.println("No room types available.");
+            System.out.println("There are no room types available.");
         } else {
             roomTypes.forEach(System.out::println);
         }
     }
-
+    // viewAllEmployeesWithRole(): Displays all employees with their roles.
     private static void viewAllEmployeesWithRole() {
         System.out.println("\n--- View All Employees With Roles ---");
         var employees = adminService.viewAllEmployeesWithRole();
         if (employees.isEmpty()) {
-            System.out.println("No employees found.");
+            System.out.println("No employees have been found.");
         } else {
             employees.forEach(System.out::println);
         }
     }
-
+    // viewAllHotelsWithAddress(): Lists all hotels with their address information.
     private static void viewAllHotelsWithAddress() {
         var hotels = adminService.viewAllHotelsWithAddress();
         if (hotels.isEmpty()) {
-            System.out.println("No hotels with addresses found.");
+            System.out.println("No hotels with addresses have been found.");
         } else {
             for (var hotel : hotels) {
                 System.out.println(hotel);
             }
         }
     }
-
+    // updateEmployeeHotel(): Updates the hotel assignment for an employee.
     private static void updateEmployeeHotel() {
         System.out.print("Enter Employee ID to update: ");
         int employeeID = scanner.nextInt();
@@ -588,7 +588,7 @@ public class Main {
             System.out.println("Failed to update employee's hotel. Please check the employee ID and Hotel ID and try again.");
         }
     }
-
+    // generateMonthlyRevenueReport(): Creates a revenue report for hotels for a specified month and year.
     private static void generateMonthlyRevenueReport() {
         System.out.println("\n--- Generate Monthly Revenue Report ---");
 
@@ -606,7 +606,7 @@ public class Main {
         var reportList = adminService.generateMonthlyRevenueReport(year, month);
 
         if (reportList.isEmpty()) {
-            System.out.println("No report data available for the given month and year.");
+            System.out.println("Report data is not available for the given month and year.");
         } else {
             System.out.println("\n--- Monthly Revenue Report for " + month + "/" + year + " ---");
             for (var report : reportList) {
@@ -614,40 +614,91 @@ public class Main {
             }
         }
     }
-
+    // viewAllHousekeepingRecords(): Shows all housekeeping task records.
     private static void viewAllHousekeepingRecords() {
         var records = adminService.viewAllHousekeepingRecords();
         System.out.println("\n--- Housekeeping Records ---");
         if (records.isEmpty()) {
-            System.out.println("No housekeeping records found.");
+            System.out.println("No housekeeping records have been found.");
         } else {
             for (var record : records) {
                 System.out.println(record);
             }
         }
     }
-
+    // viewHotelStarRatings(): Shows the star ratings for all hotels.
     private static void viewHotelStarRatings() {
         var hotelStarRatings = adminService.viewStarRatingsForHotels();
-        hotelStarRatings.forEach(System.out::println);
+        if (hotelStarRatings.isEmpty()) {
+            System.out.println("There are no hotel star ratings available.");
+        } else {
+            hotelStarRatings.forEach(System.out::println);
+        }
     }
+    // createHotel(): Creates a new hotel by first creating an address and then the hotel record.
+    private static void createHotel() {
+        System.out.print("Enter Hotel Name: ");
+        String hotelName = scanner.nextLine();
+        System.out.print("Enter Street: ");
+        String street = scanner.nextLine();
+        System.out.print("Enter City: ");
+        String city = scanner.nextLine();
+        System.out.print("Enter State: ");
+        String state = scanner.nextLine();
+        System.out.print("Enter Contact Number: ");
+        String contactNumber = scanner.nextLine();
+        boolean success = adminService.createHotel(hotelName, street, city, state, contactNumber);
 
-    // --- STATIC METHODS FOR HOUSEKEEPING MENU ---
+        if (success) {
+            System.out.println("Hotel created successfully!");
+        } else {
+            System.out.println("Failed to create hotel. Please check all of the inputs and try again.");
+        }
+    }
+    // manageRoomStatus(): Updates the room type of a specified room to a new type.
+    private static void manageRoomStatus() {
+        System.out.print("Enter Room ID to update: ");
+        int roomID = scanner.nextInt();
+        scanner.nextLine(); // Clear the buffer
+
+        System.out.print("Enter New Room Type ID: ");
+        int newRoomTypeID = scanner.nextInt();
+
+        boolean success = adminService.updateRoomType(roomID, newRoomTypeID);
+        System.out.println(success ? "Room type updated successfully!" : "Failed to update room type. Please check all of the details and try again.");
+    }
+    //STATIC METHODS FOR HOUSEKEEPING MENU
+    // viewMyPendingTasks(): Shows all pending tasks assigned to the currently logged-in housekeeper.
     private static void viewMyPendingTasks() {
-        housekeepingService.viewMyPendingTasks().forEach(System.out::println);
+        var tasks = housekeepingService.viewMyPendingTasks();
+        System.out.println("\n--- My Pending Tasks ---");
+        if (tasks.isEmpty()) {
+            System.out.println("There are no pending tasks.");
+        } else {
+            for (var task : tasks) {
+                System.out.println(task);
+            }
+        }
     }
-
+    // viewMyCompletedTasks(): Shows all completed tasks that belong to the currently logged-in housekeeper.
     private static void viewMyCompletedTasks() {
-        housekeepingService.viewMyCompletedTasks().forEach(System.out::println);
+        var tasks = housekeepingService.viewMyCompletedTasks();
+        System.out.println("\n--- My Completed Tasks ---");
+        if (tasks.isEmpty()) {
+            System.out.println("There are no completed tasks.");
+        } else {
+            for (var task : tasks) {
+                System.out.println(task);
+            }
+        }
     }
-
+    // updateMyTaskStatus(): Updates a housekeeping task to completed if it belongs to the logged-in housekeeper.
     private static void updateMyTaskStatus() {
         System.out.print("Enter Task ID to mark as completed: ");
         int taskID = scanner.nextInt();
         boolean success = housekeepingService.updateMyTaskStatus(taskID);
         System.out.println(success ? "Task updated successfully!" : "Failed to update task status. Make sure the task is assigned to you.");
     }
-
     // Helper method to parse room IDs entered as a comma-separated string (e.g., "1,2,3")
     private static List<Integer> parseRoomIDs(String roomIDsInput) {
         List<Integer> roomIDs = new ArrayList<>();
@@ -661,12 +712,12 @@ public class Main {
         }
         return roomIDs;
     }
-
+    // viewMyCleaningSchedule(): Shows the cleaning schedule for the currently logged-in housekeeper.
     private static void viewMyCleaningSchedule() {
         var schedule = housekeepingService.viewMyCleaningSchedule();
         System.out.println("\n--- My Cleaning Schedule ---");
         if (schedule.isEmpty()) {
-            System.out.println("No tasks in your cleaning schedule.");
+            System.out.println("There are no tasks in your cleaning schedule.");
         } else {
             for (var task : schedule) {
                 System.out.println(task);
