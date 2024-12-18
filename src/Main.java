@@ -45,14 +45,25 @@ public class Main {
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
-        System.out.print("Enter user type (guest, administrator, receptionist, housekeeping): ");
-        String userType = scanner.nextLine();
+
+        String userType;
+        while (true) {
+            System.out.print("Enter user type (guest, receptionist, housekeeping): ");
+            userType = scanner.nextLine().trim().toLowerCase();
+            if (!userType.equals("administrator")) {
+                break; // Valid user type, exit loop
+            } else {
+                System.out.println("Error: You cannot create an administrator account via sign-up.");
+            }
+        }
+
         System.out.print("Enter contact details (email or phone): ");
         String contactDetails = scanner.nextLine();
 
         boolean success = userService.signUp(username, password, userType, contactDetails);
         System.out.println(success ? "Sign-up successful! You can now log in." : "Sign-up failed. Please try again.");
     }
+
 
     private static void logIn() {
         System.out.println("\n--- Log In ---");
