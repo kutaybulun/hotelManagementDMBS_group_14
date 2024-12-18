@@ -65,7 +65,6 @@ public class UserDataBaseAccess {
                         resultSet.getString("contactDetails")
                 );
                 currentUserID = user.getUserID();
-                System.out.println("User logged in with ID: " + currentUserID);
                 return user;
             } else {
                 return null;
@@ -93,7 +92,6 @@ public class UserDataBaseAccess {
     }
 
     public int getCurrentUserID() {
-        System.out.println("Current User ID: " + currentUserID);
         return currentUserID;
     }
 
