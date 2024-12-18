@@ -128,7 +128,7 @@ public class EmployeeDataBaseAccess {
         }
     }
 
-    // EmployeeDataBaseAccess.java
+
 
     public BigDecimal getTotalSalaryExpense(int hotelID, int year, int month) {
         String sql = """
